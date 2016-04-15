@@ -18,7 +18,7 @@ func main(){
     s := signal.New(func(r *http.Request) bool {
         allows := []string{
             "https://law.txthinking.com:444",
-            "http://127.0.0.1:1634",
+            "https://127.0.0.1:444",
         }
         origin := r.Header.Get("Origin")
         for _, v := range allows {
@@ -38,7 +38,7 @@ func main(){
     n.Use(negroni.NewRecovery())
     n.Use(negroni.NewLogger())
     n.Use(cors.New(cors.Options{
-        AllowedOrigins: []string{"https://law.txthinking.com:444", "http://127.0.0.1:1634"},
+        AllowedOrigins: []string{"https://law.txthinking.com:444", "https://127.0.0.1:444"},
         AllowedMethods: []string{"GET", "POST", "DELETE", "PUT"},
         AllowCredentials: true,
     }))
@@ -54,7 +54,7 @@ func main(){
         CustomFrameOptionsValue: "SAMEORIGIN",
         ContentTypeNosniff: true,
         BrowserXssFilter: true,
-        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://law.txthinking.com:444 wss://law.txthinking.com:444 https://fonts.googleapis.com https://fonts.gstatic.com https://webrtc.github.io https://ajax.googleapis.com",
+        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://law.txthinking.com:444 wss://law.txthinking.com:444 https://fonts.googleapis.com https://fonts.gstatic.com https://webrtc.github.io https://ajax.googleapis.com https://127.0.0.1:444",
     }).HandlerFuncWithNext))
     n.Use(gzip.Gzip(gzip.DefaultCompression))
     n.Use(negroni.NewStatic(http.Dir("public")))
