@@ -51,6 +51,7 @@ function pc() {
     return new RTCPeerConnection({
         iceServers: [
             {url: "stun:sloth.nixisall.com:3478"},
+            {url: "turn:sloth.nixisall.com:3478"},
             {
                 url: "turn:sloth.nixisall.com:3478",
                 username: "fuck",
@@ -72,9 +73,7 @@ websocket.onclose = function(e) {
     $('#you').removeAttr('src');
     $('#me').removeAttr('src');
     p.close();
-    p.close();
     d.close();
-    yourData.close();
     console.log('websocket closed');
 }
 
