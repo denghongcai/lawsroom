@@ -3,6 +3,7 @@ package main
 import(
     "net/http"
     "log"
+    "os"
 
     "github.com/gorilla/mux"
     "github.com/unrolled/secure"
@@ -16,7 +17,7 @@ func main(){
     r := mux.NewRouter()
     s := signal.New(func(r *http.Request) bool {
         allows := []string{
-            "https://law.txthinking.com",
+            "https://law.txthinking.com:444",
             "http://127.0.0.1:1634",
         }
         origin := r.Header.Get("Origin")
@@ -37,12 +38,12 @@ func main(){
     n.Use(negroni.NewRecovery())
     n.Use(negroni.NewLogger())
     n.Use(cors.New(cors.Options{
-        AllowedOrigins: []string{"https://law.txthinking.com", "http://127.0.0.1:1634"},
+        AllowedOrigins: []string{"https://law.txthinking.com:444", "http://127.0.0.1:1634"},
         AllowedMethods: []string{"GET", "POST", "DELETE", "PUT"},
         AllowCredentials: true,
     }))
     n.Use(negroni.HandlerFunc(secure.New(secure.Options{
-        AllowedHosts: []string{"law.txthinking.com"},
+        AllowedHosts: []string{"law.txthinking.com:444"},
         SSLRedirect: true,
         SSLHost: "law.txthinking.com",
         SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
@@ -53,18 +54,26 @@ func main(){
         CustomFrameOptionsValue: "SAMEORIGIN",
         ContentTypeNosniff: true,
         BrowserXssFilter: true,
-        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://law.txthinking.com/ wss://law.txthinking.com",
+        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://law.txthinking.com:444 wss://law.txthinking.com:444 https://fonts.googleapis.com https://fonts.gstatic.com https://webrtc.github.io https://ajax.googleapis.com",
     }).HandlerFuncWithNext))
     n.Use(gzip.Gzip(gzip.DefaultCompression))
     n.Use(negroni.NewStatic(http.Dir("public")))
     n.UseHandler(r)
 
     go func() {
-        if err := http.ListenAndServe(":80", n); err != nil {
-            log.Fatal("http", err)
-        }
+        //if err := http.ListenAndServe(":80", n); err != nil {
+            //log.Fatal("http", err)
+        //}
     }()
-    if err := http.ListenAndServeTLS(":443", "/etc/letsencrypt/live/law.txthinking.com/cert.pem", "/etc/letsencrypt/live/law.txthinking.com/privkey.pem", n); err != nil {
+    cert := "/etc/letsencrypt/live/law.txthinking.com/cert.pem"
+    privkey := "/etc/letsencrypt/live/law.txthinking.com/privkey.pem"
+    if _, err := os.Open(cert); err != nil {
+        cert = "./cert.pem"
+    }
+    if _, err := os.Open(privkey); err != nil {
+        privkey = "./privkey.pem"
+    }
+    if err := http.ListenAndServeTLS(":444", cert, privkey, n); err != nil {
         log.Fatal("https", err)
     }
 }

@@ -3,6 +3,7 @@ package main
 import(
     "git.txthinking.com/txthinking/signal"
     "net/http"
+    "strconv"
     util "github.com/txthinking/ant"
 )
 
@@ -37,7 +38,7 @@ func (d *Dog) BeforeMessage(in *signal.InMessage) error {
             }
         }
         in.Message.For = signal.FOR_CREATE
-        in.Message.Room = util.SHA1(strconv.Itoa(util.RandomNumber()))
+        in.Message.Room = util.SHA1(strconv.Itoa(int(util.RandomNumber())))
     case signal.FOR_LEAVE:
     }
     return nil
