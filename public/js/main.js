@@ -3,6 +3,20 @@ var leaveToNext = false;
 var me = Date.now().toString();
 var myStream;
 var p, d;
+var vw,vh;
+var kb = require("keyboardjs");
+
+if($(window).width() > 768){
+    $('paper-card').css("width", $(window).width()/12*4-50 + "px");
+    $('paper-card').css("height", ($(window).height()-250)/2 + "px");
+    $('#chat').css("height", ($(window).height()-250-20) + "px");
+    vw = $(window).width()/12*4-60;
+    vh = ($(window).height()-250)/2;
+}else{
+    $('paper-card').css("width", $(window).width() + "px");
+    vw = $(window).width();
+    vh = $("papter-card").height();
+}
 
 $('#start').click(function(){
     websocket.send(JSON.stringify({
@@ -26,7 +40,10 @@ $('#stop').click(function(){
     }));
 });
 
-$('#send').click(function(){
+kb.bind('enter', function(){
+    if(!document.querySelector('#text').focused){
+        return;
+    }
     $('#chat').html($('#chat').html()+$('#text').val()+"<br/>");
     d.send($('#text').val());
     $('#text').val('');
@@ -34,11 +51,11 @@ $('#send').click(function(){
 
 function initStream() {
     navigator.mediaDevices.getUserMedia({
-        //audio: true,
+        audio: true,
         video: {
             frameRate: { ideal: 10, max: 15 },
-            width: {max: 300},
-            height: {max: 300}
+            width: {max: vw},
+            height: {max:vh}
         }
     }).then(function(s) {
         myStream = s;
@@ -238,3 +255,4 @@ websocket.onmessage = function(e) {
             break;
     }
 }
+

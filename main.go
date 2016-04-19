@@ -54,7 +54,7 @@ func main(){
         CustomFrameOptionsValue: "SAMEORIGIN",
         ContentTypeNosniff: true,
         BrowserXssFilter: true,
-        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://law.txthinking.com:444 wss://law.txthinking.com:444 https://fonts.googleapis.com https://fonts.gstatic.com https://webrtc.github.io https://ajax.googleapis.com https://127.0.0.1:444",
+        ContentSecurityPolicy: "default-src 'self' blob: https://law.txthinking.com:444 wss://law.txthinking.com:444 https://fonts.googleapis.com https://fonts.gstatic.com https://127.0.0.1:444",
     }).HandlerFuncWithNext))
     n.Use(gzip.Gzip(gzip.DefaultCompression))
     n.Use(negroni.NewStatic(http.Dir("public")))

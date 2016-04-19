@@ -1,0 +1,24 @@
+{
+  "name": "public",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Cloud <cloud@txthinking.com>"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.10",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.7",
+    "jquery": "^2.2.3",
+    "webrtc-adapter": "gh-pages"
+  }
+}

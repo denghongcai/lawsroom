@@ -1,0 +1,18 @@
+@media (max-width: 768px) {
+    .mobile {
+        flex-direction: column;
+        flex: 1;
+    }
+    .mobileauto {
+        flex: auto;
+    }
+}
+#content {
+    margin: 10px 10px 0 10px;
+}
+
+#chat {
+    padding: 10px 10px 10px 10px;
+}
+
+
