@@ -7,15 +7,21 @@ var vw,vh;
 var kb = require("keyboardjs");
 
 if($(window).width() > 768){
-    $('paper-card').css("width", $(window).width()/12*4-50 + "px");
-    $('paper-card').css("height", ($(window).height()-250)/2 + "px");
     $('#chat').css("height", ($(window).height()-250-20) + "px");
-    vw = $(window).width()/12*4-60;
-    vh = ($(window).height()-250)/2;
+    $('.video-div').css("height", ($(window).height()-250-20)/2 + "px");
+    $('.video-div').css("width", $(window).width()/12*4-50 + "px");
+    $('#you').css("width", $(window).width()/12*4-50 + "px");
+    $('#me').css("width", $(window).width()/12*4-50 + "px");
+    $('#you').css("height", ($(window).height()-250-20)/2 + "px");
+    $('#me').css("height", ($(window).height()-250-20)/2 + "px");
+    vw = $(window).width()/12*4-50;
+    vh = ($(window).height()-250-20)/2;
 }else{
-    $('paper-card').css("width", $(window).width() + "px");
+    $('.video-div').css("width", $(window).width() + "px");
+    $('#you').css("width", $(window).width() + "px");
+    $('#me').css("width", $(window).width() + "px");
     vw = $(window).width();
-    vh = $("papter-card").height();
+    vh = $(".video-div")[0].height();
 }
 
 $('#start').click(function(){
