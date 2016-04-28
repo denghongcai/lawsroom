@@ -15,7 +15,7 @@ import(
 
 func main(){
     r := mux.NewRouter()
-    signal.ROOM_CAPACITY = 5
+    signal.ROOM_CAPACITY = 2
     s := signal.New(func(r *http.Request) bool {
         allows := []string{
             "https://www.lawsroom.com",
@@ -30,7 +30,7 @@ func main(){
             }
         }
         return false
-    }, nil)
+    }, &Dog{})
     r.Handle("/signal/{id}", s)
     r.Methods("GET").Path("/hello").HandlerFunc(func(w http.ResponseWriter, r *http.Request){
         w.Header().Set("Content-Type", "application/json")
@@ -46,9 +46,9 @@ func main(){
         AllowCredentials: true,
     }))
     n.Use(negroni.HandlerFunc(secure.New(secure.Options{
-        AllowedHosts: []string{"www.lawsroom.com"},
+        AllowedHosts: []string{"random.lawsroom.com"},
         SSLRedirect: true,
-        SSLHost: "www.lawsroom.com",
+        SSLHost: "random.lawsroom.com",
         SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
         STSSeconds: 315360000,
         STSIncludeSubdomains: true,

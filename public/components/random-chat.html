@@ -1,0 +1,242 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/paper-card/paper-card.html">
+<link rel="import" href="/bower_components/paper-input/paper-input.html">
+<link rel="import" href="/bower_components/paper-material/paper-material.html">
+<link rel="import" href="/components/x-video.html">
+<dom-module id="random-chat">
+    <template>
+        <div class="lt-container lt-lg-h-3 lt-md-h-3 lt-sm-h-5 lt-xs-h-8">
+            <div class="lt
+                lt-lg-x-0 lt-lg-y-0 lt-lg-w-1 lt-lg-h-1
+                lt-md-x-0 lt-md-y-0 lt-md-w-1 lt-md-h-1
+                lt-sm-x-0 lt-sm-y-0 lt-sm-w-1 lt-sm-h-1
+                lt-xs-x-0 lt-xs-y-0 lt-xs-w-1 lt-xs-h-1">
+                <div class="lt-body">
+                    <x-video id="you"></x-video>
+                </div>
+            </div>
+            <div class="lt
+                lt-lg-x-0 lt-lg-y-1 lt-lg-w-1 lt-lg-h-1
+                lt-md-x-0 lt-md-y-1 lt-md-w-1 lt-md-h-1
+                lt-sm-x-0 lt-sm-y-1 lt-sm-w-1 lt-sm-h-1
+                lt-xs-x-0 lt-xs-y-1 lt-xs-w-1 lt-xs-h-1">
+                <div class="lt-body">
+                    <x-video id="me"></x-video>
+                </div>
+            </div>
+            <div class="lt
+                lt-lg-x-0 lt-lg-y-2 lt-lg-w-1 lt-lg-h-1
+                lt-md-x-0 lt-md-y-2 lt-md-w-1 lt-md-h-1
+                lt-sm-x-0 lt-sm-y-2 lt-sm-w-1 lt-sm-h-1
+                lt-xs-x-0 lt-xs-y-2 lt-xs-w-1 lt-xs-h-1">
+                <div class="lt-body">
+                    <paper-button id="start" disabled raised on-click="start">Start</paper-button>
+                    <paper-button id="next" disabled raised on-click="next">Next</paper-button>
+                    <paper-button id="stop" disabled raised on-click="stop">Stop</paper-button>
+                </div>
+            </div>
+            <div class="lt
+                lt-lg-x-1 lt-lg-y-0 lt-lg-w-2 lt-lg-h-2
+                lt-md-x-1 lt-md-y-0 lt-md-w-1 lt-md-h-2
+                lt-sm-x-1 lt-sm-y-0 lt-sm-w-1 lt-sm-h-2
+                lt-xs-x-0 lt-xs-y-3 lt-xs-w-1 lt-xs-h-1">
+                <div class="lt-body">
+                    <paper-material id="chat" style="width:100%;height:100%;display:block;"></paper-material>
+                </div>
+            </div>
+            <div class="lt
+                lt-lg-x-1 lt-lg-y-2 lt-lg-w-2 lt-lg-h-1
+                lt-md-x-1 lt-md-y-2 lt-md-w-1 lt-md-h-1
+                lt-sm-x-1 lt-sm-y-2 lt-sm-w-1 lt-sm-h-1
+                lt-xs-x-0 lt-xs-y-4 lt-xs-w-1 lt-xs-h-1">
+                <div class="lt-body">
+                    <paper-input disabled id="input"></paper-input>
+                </div>
+            </div>
+            <div class="lt
+                lt-lg-x-3 lt-lg-y-0 lt-lg-w-1 lt-lg-h-1
+                lt-md-x-2 lt-md-y-0 lt-md-w-1 lt-md-h-1
+                lt-sm-x-0 lt-sm-y-3 lt-sm-w-1 lt-sm-h-1
+                lt-xs-x-0 lt-xs-y-5 lt-xs-w-1 lt-xs-h-1">
+                <div class="lt-body">
+                    ad
+                </div>
+            </div>
+            <div class="lt
+                lt-lg-x-3 lt-lg-y-1 lt-lg-w-1 lt-lg-h-1
+                lt-md-x-2 lt-md-y-1 lt-md-w-1 lt-md-h-1
+                lt-sm-x-1 lt-sm-y-3 lt-sm-w-1 lt-sm-h-1
+                lt-xs-x-0 lt-xs-y-6 lt-xs-w-1 lt-xs-h-1">
+                <div class="lt-body">
+                    ad
+                </div>
+            </div>
+            <div class="lt
+                lt-lg-x-3 lt-lg-y-2 lt-lg-w-1 lt-lg-h-1
+                lt-md-x-2 lt-md-y-2 lt-md-w-1 lt-md-h-1
+                lt-sm-x-0 lt-sm-y-4 lt-sm-w-1 lt-sm-h-1
+                lt-xs-x-0 lt-xs-y-7 lt-xs-w-1 lt-xs-h-1">
+                <div class="lt-body">
+                    ad
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: "random-chat",
+            properties: {
+                me: {
+                    type: String
+                },
+                leaveToNext: {
+                    type: Boolean
+                },
+                room: {
+                    type: Object
+                }
+            }, 
+            ready: function(){
+                this.me = Date.now().toString();
+                this.room = new Room({
+                    signalServer: "wss://www.lawsroom.com:1443/signal/",
+                    me: this.me,
+                    iceServers: [
+                        {url: "stun:www.lawsroom.com:3478"}
+                        //{url: "turn:www.lawsroom.com:3478"}
+                    ]
+                });
+                this.room.on("ws_open", this.ws_open.bind(this));
+                this.room.on("ws_close", this.ws_close.bind(this));
+                this.room.on("peer_conn_open", this.peer_conn_open.bind(this));
+                this.room.on("peer_conn_close", this.peer_conn_close.bind(this));
+                this.room.on("data_channel_open", this.data_channel_open.bind(this));
+                this.room.on("data_channel_message", this.data_channel_message.bind(this));
+                this.room.on("data_channel_close", this.data_channel_close.bind(this));
+                this.room.on("message_create", this.message_create.bind(this));
+                this.room.on("message_join", this.message_join.bind(this));
+                this.room.on("message_leave", this.message_leave.bind(this));
+                this.room.on("message_notice", this.message_notice.bind(this));
+                this.room.on("remote_stream_add", this.remote_stream_add.bind(this));
+                this.room.on("remote_stream_remove", this.remote_stream_remove.bind(this));
+                this.room.in();
+
+                var self = this;
+                K.bind('enter', function(){
+                    if(!self.$.input.focused){
+                        return;
+                    }
+                    self.showData(self.$.input.value);
+                    self.room.send(self.$.input.value);
+                    self.$.input.value = "";
+                });
+            },
+            ws_open: function(){
+                this.$.start.disabled = false;
+            },
+            ws_close: function(){
+                this.$.start.disabled = true;
+                this.$.next.disabled = true;
+                this.$.stop.disabled = true;
+                this.$.you.stop();
+                this.$.me.stop();
+                this.showData("网络连接已断开");
+            },
+            peer_conn_open: function(who){
+                this.showData("有人来了");
+            },
+            peer_conn_close: function(who){
+                console.log('pc close');
+                this.$.you.stop();
+            },
+            data_channel_open: function(who){
+                this.$.input.disabled = false;
+            },
+            data_channel_message: function(who, data){
+                this.showData(data);
+            },
+            data_channel_close: function(who){
+                this.$.input.disabled = true;
+            },
+            message_create: function(o){
+                this.$.start.disabled = true;
+                this.$.next.disabled = false;
+                this.$.stop.disabled = false;
+                if (this.myStream) {
+                    this.$.me.play(URL.createObjectURL(this.myStream));
+                }
+            },
+            message_join: function(o){
+                this.$.start.disabled = true;
+                this.$.next.disabled = false;
+                this.$.stop.disabled = false;
+                if (this.myStream) {
+                    this.$.me.play(URL.createObjectURL(this.myStream));
+                }
+            },
+            message_leave: function(o){
+                this.$.you.stop();
+                this.$.next.disabled = true;
+                this.$.stop.disabled = true;
+                if (this.leaveToNext) {
+                    this.$.start.disabled = true;
+                    this.room.join("do not care");
+                }else{
+                    this.$.me.stop();
+                    this.$.start.disabled = false;
+                }
+            },
+            message_notice: function(o){
+                if(typeof o.Data === "string"){
+                    if(o.Data === 'no_pair_room'){
+                        this.showData("没有合适的房间, 正在创建房间并等待他人进入");
+                        this.room.create(Date.now().toString());
+                    }
+                }
+                if(typeof o.Data === "object"){
+                    if(typeof o.Data.online === 'number'){
+                        this.showData("当前在线人数: " + o.Data.online);
+                    }
+                }
+            },
+            remote_stream_add: function(who, stm){
+                this.$.you.play(URL.createObjectURL(stm));
+            },
+            remote_stream_remove: function(who){
+                console.log('stream remove');
+                this.$.you.stop();
+            },
+
+            start: function(){
+                var self = this;
+                navigator.mediaDevices.getUserMedia({
+                    audio: true,
+                    video: {
+                        width: 500,
+                        height: 500,
+                        frameRate: { ideal: 10, max: 15 }
+                    }
+                }).then(function(s) {
+                    self.myStream = s;
+                    self.room.setMyStream(s);
+                    self.room.join("do not care");
+                }).catch(function(err) {
+                    console.log(err);
+                });
+            },
+            next: function(){
+                this.leaveToNext = true;
+                this.room.leave();
+            },
+            stop: function(){
+                this.leaveToNext = false;
+                this.room.leave();
+            },
+            showData: function(data){
+                var text = he.escape(data);
+                var old = this.$.chat.innerHTML;
+                this.$.chat.innerHTML = old +"<br/>" + text;
+            }
+        });
+    </script>
+</dom-module>

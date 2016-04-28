@@ -5,6 +5,7 @@ var css = require('gulp-minify-css');
 var js = require('gulp-uglify');
 var concat = require('gulp-concat');
 var rename = require('gulp-rename');
+var util = require('gulp-util');
 
 gulp.task('css', function(){
     gulp.src('css/*.css')
@@ -14,15 +15,15 @@ gulp.task('css', function(){
 
 gulp.task('js', function(){
     gulp.src('js/*.js')
-        .pipe(js())
+        .pipe(js().on('error', util.log))
         .pipe(gulp.dest('dist/js'));
 });
 
-gulp.task('bundle', shell.task([
+gulp.task('keyboardjs', shell.task([
     'browserify \
         -g uglifyify \
         -r keyboardjs \
-        > dist/bundle.js'
+        > dist/js/keyboardjs.js'
 ]));
 
 gulp.task('watch', function () {
@@ -32,5 +33,5 @@ gulp.task('watch', function () {
     ], ['css', 'js']);
 });
 
-gulp.task('default', ['js', 'css', 'bundle', 'watch']);
+gulp.task('default', ['js', 'css', 'keyboardjs', 'watch']);
 

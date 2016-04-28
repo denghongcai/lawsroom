@@ -19,6 +19,8 @@
     "iron-elements": "PolymerElements/iron-elements#^1.0.10",
     "paper-elements": "PolymerElements/paper-elements#^1.0.7",
     "jquery": "^2.2.3",
-    "webrtc-adapter": "gh-pages"
+    "webrtc-adapter": "gh-pages",
+    "page": "visionmedia/page.js#^1.7.1",
+    "he": "^1.0.0"
   }
 }
