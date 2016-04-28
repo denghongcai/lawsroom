@@ -3,8 +3,7 @@ package main
 import(
     "git.txthinking.com/txthinking/signal"
     "net/http"
-    "strconv"
-    util "github.com/txthinking/ant"
+    "errors"
 )
 
 type Dog struct {
@@ -16,15 +15,15 @@ func (d *Dog) BeforeConnect(r *http.Request) error {
 
 func (d *Dog) AfterNewPeer(p *signal.Peer) {
     d.Broadcast(signal.Message{
-        For: "online",
-        Data: len(signal.Peers),
+        For: "notice",
+        Data: map[string]int{"online": len(signal.Peers)},
     })
 }
 
 func (d *Dog) AfterPeerQuit(p *signal.Peer) {
     d.Broadcast(signal.Message{
-        For: "online",
-        Data: len(signal.Peers),
+        For: "notice",
+        Data: map[string]int{"online": len(signal.Peers)},
     })
 }
 
@@ -37,8 +36,7 @@ func (d *Dog) BeforeMessage(in *signal.InMessage) error {
                 return nil
             }
         }
-        in.Message.For = signal.FOR_CREATE
-        in.Message.Room = util.SHA1(strconv.Itoa(int(util.RandomNumber())))
+        return errors.New("no_pair_room")
     case signal.FOR_LEAVE:
     }
     return nil

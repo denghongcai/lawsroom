@@ -1,0 +1,42 @@
+<dom-module id="x-video">
+    <template>
+        <style>
+            img, video {
+                width: 100%;
+                height:100%;
+                display:block;
+            }
+        </style>
+        <img id="img" src="/img/stop.png"/>
+        <video id="video" src="{{videoUrl}}"></video>
+    </template>
+    <script>
+        Polymer({
+            is: "x-video",
+            properties: {
+                videoUrl: {
+                    type: String
+                },
+                status: {
+                    type: String,
+                    value: "stop",
+                }
+            }, 
+            ready: function(){
+                this.$.video.hidden = true;
+            },
+            play: function(url){
+                this.$.img.hidden = true;
+                this.$.video.hidden = false;
+                this.videoUrl = url;
+                this.$.video.autoplay = true;
+                this.status = 'play';
+            },
+            stop: function(){
+                this.$.img.hidden = false;
+                this.$.video.hidden = true;
+                this.status = 'stop';
+            }
+        });
+    </script>
+</dom-module>

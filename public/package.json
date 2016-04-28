@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "keyboardjs": "^2.2.0"
+    "gulp-util": "^3.0.7",
+    "keyboardjs": "^2.2.0",
+    "layout-grid": "^2.2.0"
   },
   "devDependencies": {
     "bower": "^1.7.9",
