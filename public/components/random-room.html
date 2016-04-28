@@ -2,8 +2,9 @@
 <link rel="import" href="/bower_components/paper-card/paper-card.html">
 <link rel="import" href="/bower_components/paper-input/paper-input.html">
 <link rel="import" href="/bower_components/paper-material/paper-material.html">
+<link rel="import" href="/bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="/components/x-video.html">
-<dom-module id="random-chat">
+<dom-module id="random-room">
     <template>
         <div class="lt-container lt-lg-h-3 lt-md-h-3 lt-sm-h-5 lt-xs-h-8">
             <div class="lt
@@ -33,6 +34,7 @@
                     <paper-button id="start" disabled raised on-click="start">Start</paper-button>
                     <paper-button id="next" disabled raised on-click="next">Next</paper-button>
                     <paper-button id="stop" disabled raised on-click="stop">Stop</paper-button>
+                    <paper-button id="leave" raised on-click="leave">Leave</paper-button>
                 </div>
             </div>
             <div class="lt
@@ -81,10 +83,12 @@
                 </div>
             </div>
         </div>
+        <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"
+                            on-keys-pressed="send"></iron-a11y-keys>
     </template>
     <script>
         Polymer({
-            is: "random-chat",
+            is: "random-room",
             properties: {
                 me: {
                     type: String
@@ -94,20 +98,27 @@
                 },
                 room: {
                     type: Object
+                },
+                target: {
+                    type: Object,
+                    value: function() {
+                        return this.$.input;
+                    }
                 }
             }, 
             ready: function(){
                 this.me = Date.now().toString();
                 this.room = new Room({
-                    signalServer: "wss://www.lawsroom.com:1443/signal/",
+                    signalServer: "wss://lawsroom.com:1443/signal/",
                     me: this.me,
                     iceServers: [
-                        {url: "stun:www.lawsroom.com:3478"}
-                        //{url: "turn:www.lawsroom.com:3478"}
+                        {url: "stun:lawsroom.com:3478"}
+                        //{url: "turn:lawsroom.com:3478"}
                     ]
                 });
                 this.room.on("ws_open", this.ws_open.bind(this));
                 this.room.on("ws_close", this.ws_close.bind(this));
+                this.room.on("ws_error", this.ws_error.bind(this));
                 this.room.on("peer_conn_open", this.peer_conn_open.bind(this));
                 this.room.on("peer_conn_close", this.peer_conn_close.bind(this));
                 this.room.on("data_channel_open", this.data_channel_open.bind(this));
@@ -120,16 +131,6 @@
                 this.room.on("remote_stream_add", this.remote_stream_add.bind(this));
                 this.room.on("remote_stream_remove", this.remote_stream_remove.bind(this));
                 this.room.in();
-
-                var self = this;
-                K.bind('enter', function(){
-                    if(!self.$.input.focused){
-                        return;
-                    }
-                    self.showData(self.$.input.value);
-                    self.room.send(self.$.input.value);
-                    self.$.input.value = "";
-                });
             },
             ws_open: function(){
                 this.$.start.disabled = false;
@@ -141,6 +142,14 @@
                 this.$.you.stop();
                 this.$.me.stop();
                 this.showData("网络连接已断开");
+            },
+            ws_error: function(){
+                this.$.start.disabled = true;
+                this.$.next.disabled = true;
+                this.$.stop.disabled = true;
+                this.$.you.stop();
+                this.$.me.stop();
+                this.showData("notice: 网络连接发生错误");
             },
             peer_conn_open: function(who){
                 this.showData("有人来了");
@@ -231,6 +240,18 @@
             stop: function(){
                 this.leaveToNext = false;
                 this.room.leave();
+            },
+            leave: function(){
+                this.leaveToNext = false;
+                if(this.$.start.disabled){
+                    this.room.leave();
+                }
+                page('/');
+            },
+            send: function(){
+                this.showData(this.$.input.value);
+                this.room.send(this.$.input.value);
+                this.$.input.value = "";
             },
             showData: function(data){
                 var text = he.escape(data);

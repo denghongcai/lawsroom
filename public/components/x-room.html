@@ -2,6 +2,7 @@
 <link rel="import" href="/bower_components/paper-card/paper-card.html">
 <link rel="import" href="/bower_components/paper-input/paper-input.html">
 <link rel="import" href="/bower_components/paper-material/paper-material.html">
+<link rel="import" href="/bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="/components/x-video.html">
 <dom-module id="x-room">
     <template>
@@ -57,7 +58,7 @@
                 lt-sm-x-1 lt-sm-y-2 lt-sm-w-1 lt-sm-h-1
                 lt-xs-x-0 lt-xs-y-5 lt-xs-w-1 lt-xs-h-1">
                 <div class="lt-body">
-                    <paper-button id="leave" disabled raised on-click="leave">Leave</paper-button>
+                    <paper-button id="leave" raised on-click="leave">Leave</paper-button>
                 </div>
             </div>
             <div class="lt
@@ -106,6 +107,8 @@
                 </div>
             </div>
         </div>
+        <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"
+                            on-keys-pressed="send"></iron-a11y-keys>
     </template>
     <script>
         Polymer({
@@ -113,6 +116,18 @@
             properties: {
                 roomId: {
                     type: String,
+                    reflectToAttribute: true
+                },
+                opened: {
+                    type: Boolean,
+                    value: false 
+                },
+                inroom: {
+                    type: Boolean,
+                    value: false 
+                },
+                init: {
+                    type: Number,
                     notify: true,
                     reflectToAttribute: true,
                     observer: 'init'
@@ -126,23 +141,27 @@
                 videos: {
                     type: Object,
                     value: {v0: "", v1: "", v2: "", v3: "", v4: ""}
+                },
+                target: {
+                    type: Object,
+                    value: function() {
+                        return this.$.input;
+                    }
                 }
             }, 
             ready: function(){
                 this.me = Date.now().toString();
-            },
-            init: function(){
-                console.log('room:', this.roomId);
                 this.room = new Room({
-                    signalServer: "wss://www.lawsroom.com/signal/",
+                    signalServer: "wss://lawsroom.com/signal/",
                     me: this.me,
                     iceServers: [
-                        {url: "stun:www.lawsroom.com:3478"}
-                        //{url: "turn:www.lawsroom.com:3478"}
+                        {url: "stun:lawsroom.com:3478"}
+                        //{url: "turn:lawsroom.com:3478"}
                     ]
                 });
                 this.room.on("ws_open", this.ws_open.bind(this));
                 this.room.on("ws_close", this.ws_close.bind(this));
+                this.room.on("ws_error", this.ws_error.bind(this));
                 this.room.on("peer_conn_open", this.peer_conn_open.bind(this));
                 this.room.on("peer_conn_close", this.peer_conn_close.bind(this));
                 this.room.on("data_channel_open", this.data_channel_open.bind(this));
@@ -155,25 +174,25 @@
                 this.room.on("remote_stream_add", this.remote_stream_add.bind(this));
                 this.room.on("remote_stream_remove", this.remote_stream_remove.bind(this));
                 this.room.in();
-
-                var self = this;
-                K.bind('enter', function(){
-                    if(!self.$.input.focused){
-                        return;
-                    }
-                    self.showData(self.me +': ' +self.$.input.value);
-                    self.room.send(self.$.input.value);
-                    self.$.input.value = "";
-                });
+            },
+            init: function(){
+                if(this.opened) {
+                    this.join();
+                }
             },
             ws_open: function(){
+                this.opened = true;
                 console.log('ws open');
-                this.join();
             },
             ws_close: function(){
-                this.$.leave.disabled = true;
+                this.opened = false;
                 this.removeVideos();
                 this.showData("notice: 网络连接已断开");
+            },
+            ws_error: function(){
+                this.opened = false;
+                this.removeVideos();
+                this.showData("notice: 网络连接发生错误");
             },
             peer_conn_open: function(who){
                 this.showData("notice: " + who + " 来了");
@@ -194,23 +213,22 @@
                 }
             },
             message_create: function(o){
-                this.$.leave.disabled = false;
+                this.inroom = true;
                 if (this.myStream) {
                     this.addVideo(this.me, this.myStream);
                 }
                 this.showData("notice: 您已进入房间"+this.roomId);
             },
             message_join: function(o){
-                this.$.leave.disabled = false;
+                this.inroom = true;
                 if (this.myStream) {
                     this.addVideo(this.me, this.myStream);
                 }
                 this.showData("notice: 您已进入房间"+this.roomId);
             },
             message_leave: function(o){
+                this.inroom = false;
                 this.removeVideos();
-                this.$.leave.disabled = true;
-                // todo page();
             },
             message_notice: function(o){
                 if(typeof o.Data === "string"){
@@ -272,7 +290,15 @@
                 });
             },
             leave: function(){
-                this.room.leave();
+                if(this.inroom){
+                    this.room.leave();
+                }
+                page('/');
+            },
+            send: function(){
+                this.showData(this.me +': ' +this.$.input.value);
+                this.room.send(this.$.input.value);
+                this.$.input.value = "";
             },
             showData: function(data){
                 var text = he.escape(data);

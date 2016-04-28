@@ -10,13 +10,9 @@
         <script src="/bower_components/jquery/dist/jquery.min.js"></script>
         <script src="/bower_components/page/page.js"></script>
         <script src="/bower_components/he/he.js"></script>
-        <script src="/dist/js/keyboardjs.js"></script>
-        <script>
-            var K = require("keyboardjs");
-        </script>
         <link rel="stylesheet" type="text/css" href="/node_modules/layout-grid/dist/css/layout-grid.min.css" />
         <script src="/node_modules/layout-grid/dist/js/layout-grid.min.js"></script>
-        <script src="/js/room.js"></script>
+        <script src="/dist/js/room.js"></script>
 
         <link rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html">
         <link rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
@@ -30,7 +26,8 @@
         <link rel="import" href="/bower_components/paper-toolbar/paper-toolbar.html">
         <link rel="import" href="/bower_components/paper-button/paper-button.html">
 
-        <!--<link rel="import" href="/components/random-chat.html">-->
+        <link rel="import" href="/components/x-door.html">
+        <link rel="import" href="/components/random-room.html">
         <link rel="import" href="/components/x-room.html">
     </head>
     <body class="fullbleed vertical layout">
@@ -38,8 +35,9 @@
             <paper-toolbar>
             <span class="title">Law</span>
             </paper-toolbar>
-            <iron-pages id="pages" attr-for-selected="id" selected="random-chat">
-                <!--<random-chat id="random-chat"></random-chat>-->
+            <iron-pages id="pages" attr-for-selected="id" selected="x-door">
+                <x-door id="x-door"></x-door>
+                <random-room id="random-room"></random-room>
                 <x-room id="x-room"></x-room>
             </iron-pages>
         </paper-header-panel>

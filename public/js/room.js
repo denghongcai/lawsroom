@@ -17,7 +17,7 @@ Room.prototype.in = function() {
     this.ws = new WebSocket(this.signalServer + this.me);
     this.ws.onopen = this._wsopen.bind(this);
     this.ws.onclose = this._wsclose.bind(this);
-    this.ws.onerror = this._wsclose.bind(this);
+    this.ws.onerror = this._wserror.bind(this);
     this.ws.onmessage = this._wsmessage.bind(this);
 }
 
@@ -32,12 +32,19 @@ Room.prototype._wsclose = function(e) {
         this.handles["ws_close"](e);
     }
 }
+Room.prototype._wserror = function(e) {
+    this._clean();
+    if(typeof this.handles["ws_error"] === 'function'){
+        this.handles["ws_error"](e);
+    }
+}
 Room.prototype._wsSend = function(message) {
     console.log('o', message);
     this.ws.send(JSON.stringify(message));
 }
 Room.prototype._clean = function() {
     this.id = undefined;
+    this.myStream = undefined;
     for(var id in this.peerConns){
         this.peerConns[id].close();
         delete this.peerConns[id];

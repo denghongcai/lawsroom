@@ -1,0 +1,42 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/paper-input/paper-input.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<dom-module id="x-door">
+    <template>
+        <style>
+            .container {
+                position:absolute; top:50%;left:50%;transform:translate(-50%,-50%);
+            }
+            div{
+                text-align:center;
+            }
+        </style>
+        <div class="container">
+        <div><paper-input id="input" placeholder="输入房间名字按回车进入"></paper-input></div>
+        <div>OR</div>
+        <div><paper-button on-click="random">随机进入房间</paper-button></div>
+        </div>
+        <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"
+                            on-keys-pressed="room"></iron-a11y-keys>
+    </template>
+    <script>
+        Polymer({
+            is: "x-door",
+            properties: {
+                target: {
+                    type: Object,
+                    value: function() {
+                        return this.$.input;
+                    }
+                }
+            },
+            room: function(){
+                page('/room/'+this.$.input.value);
+            },
+            random: function(){
+                page('/random');
+            }
+        });
+    </script>
+</dom-module>
