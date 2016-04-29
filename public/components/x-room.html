@@ -118,6 +118,19 @@
                     type: String,
                     reflectToAttribute: true
                 },
+                i: {
+                    type: Number,
+                    notify: true,
+                    reflectToAttribute: true,
+                    observer: 'init',
+                    value: 0
+                },
+                me: {
+                    type: String
+                },
+                room: {
+                    type: Object
+                },
                 opened: {
                     type: Boolean,
                     value: false 
@@ -125,18 +138,6 @@
                 inroom: {
                     type: Boolean,
                     value: false 
-                },
-                init: {
-                    type: Number,
-                    notify: true,
-                    reflectToAttribute: true,
-                    observer: 'init'
-                },
-                me: {
-                    type: String
-                },
-                room: {
-                    type: Object
                 },
                 videos: {
                     type: Object,
@@ -155,24 +156,24 @@
                     signalServer: "wss://lawsroom.com/signal/",
                     me: this.me,
                     iceServers: [
-                        {url: "stun:lawsroom.com:3478"}
-                        //{url: "turn:lawsroom.com:3478"}
+                        {url: "stun:lawsroom.com:3478"},
+                        {url: "turn:lawsroom.com:3478"}
                     ]
                 });
-                this.room.on("ws_open", this.ws_open.bind(this));
-                this.room.on("ws_close", this.ws_close.bind(this));
-                this.room.on("ws_error", this.ws_error.bind(this));
-                this.room.on("peer_conn_open", this.peer_conn_open.bind(this));
-                this.room.on("peer_conn_close", this.peer_conn_close.bind(this));
-                this.room.on("data_channel_open", this.data_channel_open.bind(this));
-                this.room.on("data_channel_message", this.data_channel_message.bind(this));
-                this.room.on("data_channel_close", this.data_channel_close.bind(this));
+                this.room.on("signal_open", this.signal_open.bind(this));
+                this.room.on("signal_close", this.signal_close.bind(this));
+                this.room.on("signal_error", this.signal_error.bind(this));
+                this.room.on("peer_open", this.peer_open.bind(this));
+                this.room.on("peer_close", this.peer_close.bind(this));
+                this.room.on("channel_open", this.channel_open.bind(this));
+                this.room.on("channel_message", this.channel_message.bind(this));
+                this.room.on("channel_close", this.channel_close.bind(this));
                 this.room.on("message_create", this.message_create.bind(this));
                 this.room.on("message_join", this.message_join.bind(this));
                 this.room.on("message_leave", this.message_leave.bind(this));
                 this.room.on("message_notice", this.message_notice.bind(this));
-                this.room.on("remote_stream_add", this.remote_stream_add.bind(this));
-                this.room.on("remote_stream_remove", this.remote_stream_remove.bind(this));
+                this.room.on("stream_add", this.stream_add.bind(this));
+                this.room.on("stream_remove", this.stream_remove.bind(this));
                 this.room.in();
             },
             init: function(){
@@ -180,49 +181,52 @@
                     this.join();
                 }
             },
-            ws_open: function(){
+
+            signal_open: function(){
                 this.opened = true;
-                console.log('ws open');
+                if(this.i !== 0){
+                    this.join();
+                }
             },
-            ws_close: function(){
+            signal_close: function(){
                 this.opened = false;
                 this.removeVideos();
                 this.showData("notice: 网络连接已断开");
             },
-            ws_error: function(){
+            signal_error: function(){
                 this.opened = false;
                 this.removeVideos();
                 this.showData("notice: 网络连接发生错误");
             },
-            peer_conn_open: function(who){
+            peer_open: function(who){
                 this.showData("notice: " + who + " 来了");
             },
-            peer_conn_close: function(who){
+            peer_close: function(who){
                 this.showData("notice: " + who + " 走了");
                 this.removeVideo(who);
             },
-            data_channel_open: function(who){
+            channel_open: function(who){
                 this.$.input.disabled = false;
             },
-            data_channel_message: function(who, data){
+            channel_message: function(who, data){
                 this.showData(who + ': ' + data);
             },
-            data_channel_close: function(who){
-                if(this.room.dataChanCount() === 0){
+            channel_close: function(who){
+                if(this.room.channelsCount() === 0){
                     this.$.input.disabled = true;
                 }
             },
             message_create: function(o){
                 this.inroom = true;
-                if (this.myStream) {
-                    this.addVideo(this.me, this.myStream);
+                if (this.stream) {
+                    this.addVideo(this.me, this.stream);
                 }
                 this.showData("notice: 您已进入房间"+this.roomId);
             },
             message_join: function(o){
                 this.inroom = true;
-                if (this.myStream) {
-                    this.addVideo(this.me, this.myStream);
+                if (this.stream) {
+                    this.addVideo(this.me, this.stream);
                 }
                 this.showData("notice: 您已进入房间"+this.roomId);
             },
@@ -236,17 +240,16 @@
                         this.room.join(this.roomId);
                     }
                     if(o.Data === 'room_full'){
-                        this.room.join(this.roomId);
                     }
                 }
             },
-
-            remote_stream_add: function(who, stm){
+            stream_add: function(who, stm){
                 this.addVideo(who, stm);
             },
-            remote_stream_remove: function(who){
+            stream_remove: function(who){
                 this.removeVideo(who);
             },
+
             addVideo: function(who, stm){
                 for(var id in this.videos){
                     if(this.videos[id] === ''){
@@ -274,19 +277,19 @@
 
             join: function(){
                 var self = this;
-                navigator.mediaDevices.getUserMedia({
+                getUserMedia.call(navigator, {
                     audio: true,
                     video: {
                         width: 500,
                         height: 500,
                         frameRate: { ideal: 10, max: 15 }
                     }
-                }).then(function(s) {
-                    self.myStream = s;
-                    self.room.setMyStream(s);
+                }, function(s){
+                    self.stream = s;
+                    self.room.setStream(s);
                     self.room.create(self.roomId);
-                }).catch(function(err) {
-                    console.log(err);
+                }, function(err){
+                    console.log('get media', err);
                 });
             },
             leave: function(){
@@ -295,6 +298,7 @@
                 }
                 page('/');
             },
+
             send: function(){
                 this.showData(this.me +': ' +this.$.input.value);
                 this.room.send(this.$.input.value);

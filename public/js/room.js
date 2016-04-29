@@ -1,12 +1,12 @@
 function Room(config) {
-    this.id;
-    this.ws;
-    this.myStream;
     this.me = config.me;
     this.signalServer = config.signalServer;
     this.iceServers = config.iceServers;
-    this.peerConns = {};
-    this.dataChans = {};
+    this.id;
+    this.signal;
+    this.stream;
+    this.peers = {};
+    this.channels = {};
     this.handles = {};
 }
 
@@ -14,98 +14,101 @@ Room.prototype.on = function(evt, handle) {
     this.handles[evt] = handle;
 }
 Room.prototype.in = function() {
-    this.ws = new WebSocket(this.signalServer + this.me);
-    this.ws.onopen = this._wsopen.bind(this);
-    this.ws.onclose = this._wsclose.bind(this);
-    this.ws.onerror = this._wserror.bind(this);
-    this.ws.onmessage = this._wsmessage.bind(this);
+    this.signal = new WebSocket(this.signalServer + this.me);
+    this.signal.onopen = this._signal_open.bind(this);
+    this.signal.onclose = this._signal_close.bind(this);
+    this.signal.onerror = this._signal_error.bind(this);
+    this.signal.onmessage = this._signal_message.bind(this);
 }
 
-Room.prototype._wsopen = function(e) {
-    if(typeof this.handles["ws_open"] === 'function'){
-        this.handles["ws_open"](e);
+Room.prototype._signal_open = function(e) {
+    if(typeof this.handles["signal_open"] === 'function'){
+        this.handles["signal_open"](e);
     }
 }
-Room.prototype._wsclose = function(e) {
+Room.prototype._signal_close = function(e) {
     this._clean();
-    if(typeof this.handles["ws_close"] === 'function'){
-        this.handles["ws_close"](e);
+    if(typeof this.handles["signal_close"] === 'function'){
+        this.handles["signal_close"](e);
     }
 }
-Room.prototype._wserror = function(e) {
+Room.prototype._signal_error = function(e) {
     this._clean();
-    if(typeof this.handles["ws_error"] === 'function'){
-        this.handles["ws_error"](e);
+    if(typeof this.handles["signal_error"] === 'function'){
+        this.handles["signal_error"](e);
     }
 }
-Room.prototype._wsSend = function(message) {
+Room.prototype._signalSend = function(message) {
     console.log('o', message);
-    this.ws.send(JSON.stringify(message));
+    this.signal.send(JSON.stringify(message));
 }
 Room.prototype._clean = function() {
     this.id = undefined;
-    this.myStream = undefined;
-    for(var id in this.peerConns){
-        this.peerConns[id].close();
-        delete this.peerConns[id];
+    this.stream = undefined;
+    for(var id in this.peers){
+        this.peers[id].c.close();
+        delete this.peers[id];
     }
-    for(var id in this.dataChans){
-        if(this.dataChans[id].readyState === 'open'){
-            this.dataChans[id].close();
+    for(var id in this.channels){
+        if(this.channels[id].readyState === 'open'){
+            this.channels[id].close();
         }
-        delete this.dataChans[id];
+        delete this.channels[id];
     }
 }
-Room.prototype._newPeerConn = function() {
+Room.prototype._newPeerConnection = function() {
     return new RTCPeerConnection({iceServers: this.iceServers});
 }
 
-Room.prototype.setMyStream = function(stream) {
-    this.myStream = stream;
+Room.prototype.setStream = function(stream) {
+    this.stream = stream;
 }
 Room.prototype.create = function(id) {
-    this._wsSend({
+    this._signalSend({
         For: 'create',
         Room: id
     });
 }
 Room.prototype.join = function(id) {
-    this._wsSend({
+    this._signalSend({
         For: 'join',
         Room: id
     });
 }
 Room.prototype.leave = function() {
-    this._wsSend({
+    this._signalSend({
         For: 'leave',
         Room: this.id
     });
 }
 Room.prototype.send = function(data) {
-    for(var id in this.dataChans){
-        if(this.dataChans[id].readyState === 'open'){
-            this.dataChans[id].send(data);
+    for(var id in this.channels){
+        if(this.channels[id].readyState === 'open'){
+            this.channels[id].send(data);
         }
     }
 }
-Room.prototype.peerConnCount = function() {
+Room.prototype.peersCount = function() {
     var i = 0;
-    for(var id in this.peerConns){
-        i++;
+    for(var id in this.peers){
+        if(this.peers[id].readyState === 'connected' ||
+                this.peers[id].iceConnectionState  === 'completed'){
+            i++;
+        }
     }
     return i;
 }
-Room.prototype.dataChanCount = function() {
+Room.prototype.channelsCount = function() {
     var i = 0;
-    for(var id in this.dataChans){
-        if(this.dataChans[id].readyState === 'open'){
+    for(var id in this.channels){
+        if(this.channels[id].readyState === 'open'){
             i++;
         }
     }
     return i;
 }
 
-Room.prototype._wsmessage = function(e) {
+Room.prototype._signal_message = function(e) {
     var o = JSON.parse(e.data);
     console.log('i', o);
     switch (o.For) {
@@ -134,28 +137,60 @@ Room.prototype._wsmessage = function(e) {
         }
         break;
     case 'icecandidate':
-        this.peerConns[o.From].addIceCandidate(new RTCIceCandidate(o.Data));
+        // remoteDescription should be set (which should be done at the moment of receiving offer)
+        if(this.peers[o.From].hasRSDP){
+            this.peers[o.From].c.addIceCandidate(new RTCIceCandidate(o.Data));
+        }else{
+            this.peers[o.From].candidates.push(o.Data);
+        }
         break;
     case 'offer':
         var self = this;
-        self.peerConns[o.From].setRemoteDescription(new RTCSessionDescription(o.Data), function() {
-            self.peerConns[o.From].createAnswer(function(asd) {
-                self.peerConns[o.From].setLocalDescription(asd, function() {
-                    self.ws.send(JSON.stringify({
+        self.peers[o.From].c.setRemoteDescription(new RTCSessionDescription(o.Data), function() {
+            self.peers[o.From].hasRSDP = true;
+            for(;;){
+                var cddt = self.peers[o.From].candidates.shift();
+                if(!cddt){
+                    break;
+                }
+                self.peers[o.From].c.addIceCandidate(new RTCIceCandidate(cddt));
+            }
+            self.peers[o.From].c.createAnswer(function(asd) {
+                self.peers[o.From].c.setLocalDescription(asd, function() {
+                    self._signalSend({
                         Room: self.id,
                         From: self.me,
                         To: o.From,
                         For: 'answer',
                         Data: asd
-                    }));
+                    });
+                }, function(e){
+                    console.log('on got offer', 'set local dsp error', e);
                 });
             }, function(e) {
-                console.log(e)
+                console.log('on got offer', 'create answer error', e);
             });
+        }, function(){
+            console.log('on got offer', 'set remote dsp ok');
+        }, function(e){
+            console.log('on got offer', 'set remote dsp error', e);
         });
         break;
     case 'answer':
-        this.peerConns[o.From].setRemoteDescription(new RTCSessionDescription(o.Data));
+        var self = this;
+        self.peers[o.From].c.setRemoteDescription(new RTCSessionDescription(o.Data), function(){
+            self.peers[o.From].hasRSDP = true;
+            for(;;){
+                var cddt = self.peers[o.From].candidates.shift();
+                if(!cddt){
+                    break;
+                }
+                self.peers[o.From].c.addIceCandidate(new RTCIceCandidate(cddt));
+            }
+            console.log('on got answer', 'set remote dsp ok');
+        }, function(e){
+            console.log('on got answer', 'set remote dsp error', e);
+        });
         break;
     case 'notice':
         if(typeof this.handles["message_notice"] === 'function'){
@@ -169,23 +204,25 @@ Room.prototype._wsmessage = function(e) {
 
 Room.prototype._join_older = function(o) {
     var self = this;
-    var peerConn = self._newPeerConn();
-    if (self.myStream) {
-        peerConn.addStream(self.myStream);
+    var c = self._newPeerConnection();
+    self.peers[o.Data] = {c: undefined, hasRSDP: false, candidates: []};
+    self.peers[o.Data].c = c;
+    if (self.stream) {
+        c.addStream(self.stream);
     }
-    peerConn.onaddstream = function(e) {
-        if(typeof self.handles["remote_stream_add"] === 'function'){
-            self.handles["remote_stream_add"](o.Data, e.stream, e);
+    c.onaddstream = function(e) {
+        if(typeof self.handles["stream_add"] === 'function'){
+            self.handles["stream_add"](o.Data, e.stream, e);
         }
     }
-    peerConn.onremovestream = function(e) {
-        if(typeof self.handles["remote_stream_remove"] === 'function'){
-            self.handles["remote_stream_remove"](o.Data, e);
+    c.onremovestream = function(e) {
+        if(typeof self.handles["stream_remove"] === 'function'){
+            self.handles["stream_remove"](o.Data, e);
         }
     }
-    peerConn.onicecandidate = function(e) {
+    c.onicecandidate = function(e) {
         if (e.candidate) {
-            self._wsSend({
+            self._signalSend({
                 Room: self.id,
                 From: self.me,
                 To: o.Data,
@@ -194,76 +231,77 @@ Room.prototype._join_older = function(o) {
             });
         }
     }
-    var dataChan = peerConn.createDataChannel(o.Data);
+    var dataChan = c.createDataChannel(o.Data);
     dataChan.onopen = function(e) {
-        self.dataChans[o.Data] = dataChan;
-        if(typeof self.handles["data_channel_open"] === 'function'){
-            self.handles["data_channel_open"](o.Data, e);
+        self.channels[o.Data] = dataChan;
+        if(typeof self.handles["channel_open"] === 'function'){
+            self.handles["channel_open"](o.Data, e);
         }
     }
     dataChan.onmessage = function(e) {
-        if(typeof self.handles["data_channel_message"] === 'function'){
-            self.handles["data_channel_message"](o.Data, e.data, e);
+        if(typeof self.handles["channel_message"] === 'function'){
+            self.handles["channel_message"](o.Data, e.data, e);
         }
     }
     dataChan.onclose = function(e) {
-        delete self.dataChans[o.Data];
-        if(typeof self.handles["data_channel_close"] === 'function'){
-            self.handles["data_channel_close"](o.Data, e);
+        if(typeof self.handles["channel_close"] === 'function'){
+            self.handles["channel_close"](o.Data, e);
         }
     }
-    peerConn.createOffer().then(function(osd) {
-        peerConn.setLocalDescription(osd, function() {
-            self._wsSend({
+    c.createOffer(function(osd) {
+        c.setLocalDescription(osd, function() {
+            self._signalSend({
                 Room: self.id,
                 From: self.me,
                 To: o.Data,
                 For: 'offer',
                 Data: osd
             });
+        }, function(e){
+            console.log('create offer error', e);
         });
     });
-    peerConn.oniceconnectionstatechange = function(e) {
-        console.log("new", peerConn.iceConnectionState);
-        if (peerConn.iceConnectionState === 'connected') {
+    c.oniceconnectionstatechange = function(e) {
+        console.log("ice state on offer", c.iceConnectionState);
+        if (c.iceConnectionState === 'connected') {
         }
-        if (peerConn.iceConnectionState === 'disconnected') {
-            delete self.peerConns[o.Data];
-            if(typeof self.handles["peer_conn_close"] === 'function'){
-                self.handles["peer_conn_close"](o.Data, e);
+        if (c.iceConnectionState === 'disconnected') {
+            if(typeof self.handles["peer_close"] === 'function'){
+                self.handles["peer_close"](o.Data, e);
             }
         }
-        if (peerConn.iceConnectionState === 'completed') {
-            if(typeof self.handles["peer_conn_open"] === 'function'){
-                self.handles["peer_conn_open"](o.Data, e);
+        if (c.iceConnectionState === 'completed') {
+            if(typeof self.handles["peer_open"] === 'function'){
+                self.handles["peer_open"](o.Data, e);
             }
         }
-        if (peerConn.iceConnectionState === 'closed') {}
+        if (c.iceConnectionState === 'closed') {}
     }
-    peerConn.onsignalingstatechange = function(e) {
+    c.onsignalingstatechange = function(e) {
     }
-    self.peerConns[o.Data] = peerConn;
 }
 
 Room.prototype._join_newer = function(o) {
     var self = this;
-    var peerConn = self._newPeerConn();
-    if (self.myStream) {
-        peerConn.addStream(self.myStream);
+    var c = self._newPeerConnection();
+    self.peers[o.Data] = {c: undefined, hasRSDP: false, candidates: []};
+    self.peers[o.Data].c = c;
+    if (self.stream) {
+        c.addStream(self.stream);
     }
-    peerConn.onaddstream = function(e) {
-        if(typeof self.handles["remote_stream_add"] === 'function'){
-            self.handles["remote_stream_add"](o.Data, e.stream, e);
+    c.onaddstream = function(e) {
+        if(typeof self.handles["stream_add"] === 'function'){
+            self.handles["stream_add"](o.Data, e.stream, e);
         }
     }
-    peerConn.onremovestream = function(e) {
-        if(typeof self.handles["remote_stream_remove"] === 'function'){
-            self.handles["remote_stream_remove"](o.Data, e);
+    c.onremovestream = function(e) {
+        if(typeof self.handles["stream_remove"] === 'function'){
+            self.handles["stream_remove"](o.Data, e);
         }
     }
-    peerConn.onicecandidate = function(e) {
+    c.onicecandidate = function(e) {
         if (e.candidate) {
-            self._wsSend({
+            self._signalSend({
                 Room: self.id,
                 From: self.me,
                 To: o.Data,
@@ -272,45 +310,42 @@ Room.prototype._join_newer = function(o) {
             });
         }
     }
-    peerConn.oniceconnectionstatechange = function(e) {
-        console.log('old', peerConn.iceConnectionState)
-        if (peerConn.iceConnectionState === 'connected') {
-            if(typeof self.handles["peer_conn_open"] === 'function'){
-                self.handles["peer_conn_open"](o.Data, e);
+    c.oniceconnectionstatechange = function(e) {
+        console.log("ice state on answer", c.iceConnectionState);
+        if (c.iceConnectionState === 'connected') {
+            if(typeof self.handles["peer_open"] === 'function'){
+                self.handles["peer_open"](o.Data, e);
             }
         }
-        if (peerConn.iceConnectionState === 'disconnected') {
-            delete self.peerConns[o.Data];
-            if(typeof self.handles["peer_conn_close"] === 'function'){
-                self.handles["peer_conn_close"](o.Data, e);
+        if (c.iceConnectionState === 'disconnected') {
+            if(typeof self.handles["peer_close"] === 'function'){
+                self.handles["peer_close"](o.Data, e);
             }
         }
-        if (peerConn.iceConnectionState === 'completed') {}
-        if (peerConn.iceConnectionState === 'closed') {}
+        if (c.iceConnectionState === 'completed') {}
+        if (c.iceConnectionState === 'closed') {}
     }
-    peerConn.onsignalingstatechange = function(e) {
+    c.onsignalingstatechange = function(e) {
     }
-    peerConn.ondatachannel = function(e) {
+    c.ondatachannel = function(e) {
         var dataChan = e.channel;
         dataChan.onopen = function(e) {
-            self.dataChans[o.Data] = dataChan;
-            if(typeof self.handles["data_channel_open"] === 'function'){
-                self.handles["data_channel_open"](o.Data, e);
+            self.channels[o.Data] = dataChan;
+            if(typeof self.handles["channel_open"] === 'function'){
+                self.handles["channel_open"](o.Data, e);
             }
         }
         dataChan.onmessage = function(e) {
-            if(typeof self.handles["data_channel_message"] === 'function'){
-                self.handles["data_channel_message"](o.Data, e.data, e);
+            if(typeof self.handles["channel_message"] === 'function'){
+                self.handles["channel_message"](o.Data, e.data, e);
             }
         }
         dataChan.onclose = function(e) {
-            delete self.dataChans[o.Data];
-            if(typeof self.handles["data_channel_close"] === 'function'){
-                self.handles["data_channel_close"](o.Data, e);
+            if(typeof self.handles["channel_close"] === 'function'){
+                self.handles["channel_close"](o.Data, e);
             }
         }
     }
-    self.peerConns[o.Data] = peerConn;
 }
 
 

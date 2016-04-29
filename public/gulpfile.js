@@ -19,12 +19,12 @@ gulp.task('js', function(){
         .pipe(gulp.dest('dist/js'));
 });
 
-gulp.task('keyboardjs', shell.task([
-    'browserify \
-        -g uglifyify \
-        -r keyboardjs \
-        > dist/js/keyboardjs.js'
-]));
+//gulp.task('keyboardjs', shell.task([
+    //'browserify \
+        //-g uglifyify \
+        //-r keyboardjs \
+        //> dist/js/keyboardjs.js'
+//]));
 
 gulp.task('watch', function () {
     gulp.watch([
@@ -33,5 +33,5 @@ gulp.task('watch', function () {
     ], ['css', 'js']);
 });
 
-gulp.task('default', ['js', 'css', 'keyboardjs', 'watch']);
+gulp.task('default', ['js', 'css', 'watch']);
 
