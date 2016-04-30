@@ -31,7 +31,25 @@ func (d *Dog) BeforeMessage(in *signal.InMessage) error {
     switch in.Message.For {
     case signal.FOR_JOIN:
         for id, room := range signal.Rooms {
-            if !room.IsFull() {
+            if room.IsFull() {
+                continue
+            }
+
+            var lastPair string
+            var ok bool
+            var you string
+            for you, _ = range room.Peers {
+                break
+            }
+
+            lastPair, ok = Pairs[in.Peer.ID]
+            if !ok {
+                MakePair(in.Peer.ID, you)
+                in.Message.Room = id
+                return nil
+            }
+            if you != lastPair {
+                MakePair(in.Peer.ID, you)
                 in.Message.Room = id
                 return nil
             }
