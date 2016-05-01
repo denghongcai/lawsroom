@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var browserify = require('browserify');
 var shell = require('gulp-shell');
-var css = require('gulp-minify-css');
+var minify = require('gulp-minify-css');
 var uglify = require('gulp-uglify');
 var jsfuck = require('gulp-jsfuck');
 var concat = require('gulp-concat');
@@ -10,7 +10,7 @@ var util = require('gulp-util');
 
 gulp.task('css', function(){
     gulp.src('css/*.css')
-        .pipe(css())
+        .pipe(minify())
         .pipe(gulp.dest('dist/css'));
 });
 
