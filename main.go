@@ -55,7 +55,7 @@ func main(){
         CustomFrameOptionsValue: "SAMEORIGIN",
         ContentTypeNosniff: true,
         BrowserXssFilter: true,
-        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://lawsroom.com https://lawsroom.com:1443 wss://lawsroom.com wss://lawsroom.com:1443 https://fonts.googleapis.com https://fonts.gstatic.com https://127.0.0.1",
+        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://lawsroom.com https://lawsroom.com:1443 wss://lawsroom.com wss://lawsroom.com:1443 https://fonts.googleapis.com https://fonts.gstatic.com https://127.0.0.1",
     }).HandlerFuncWithNext))
     n.Use(gzip.Gzip(gzip.DefaultCompression))
     n.Use(negroni.NewStatic(http.Dir("public")))
