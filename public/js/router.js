@@ -9,7 +9,6 @@ page('/random', function(ctx, next){
 });
 page('/room/:id', function(ctx, next){
     room.roomId = ctx.params.id;
-    room.i = Date.now().toString();
     pages.select('x-room');
 });
 

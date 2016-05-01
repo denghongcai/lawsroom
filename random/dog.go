@@ -21,6 +21,7 @@ func (d *Dog) AfterNewPeer(p *signal.Peer) {
 }
 
 func (d *Dog) AfterPeerQuit(p *signal.Peer) {
+    delete(Pairs, p.ID)
     d.Broadcast(signal.Message{
         For: "notice",
         Data: map[string]int{"online": len(signal.Peers)},

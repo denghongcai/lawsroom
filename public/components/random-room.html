@@ -12,7 +12,7 @@
                 lt-md-x-0 lt-md-y-0 lt-md-w-1 lt-md-h-1
                 lt-sm-x-0 lt-sm-y-0 lt-sm-w-1 lt-sm-h-1
                 lt-xs-x-0 lt-xs-y-0 lt-xs-w-1 lt-xs-h-1">
-                <div class="lt-body">
+                <div class="lt-body" style="text-align:center;">
                     <x-video id="you"></x-video>
                 </div>
             </div>
@@ -21,7 +21,7 @@
                 lt-md-x-0 lt-md-y-1 lt-md-w-1 lt-md-h-1
                 lt-sm-x-0 lt-sm-y-1 lt-sm-w-1 lt-sm-h-1
                 lt-xs-x-0 lt-xs-y-1 lt-xs-w-1 lt-xs-h-1">
-                <div class="lt-body">
+                <div class="lt-body" style="text-align:center;">
                     <x-video id="me"></x-video>
                 </div>
             </div>
@@ -173,27 +173,18 @@
                 }
             },
             message_create: function(o){
-                this.$.start.disabled = true;
                 this.$.next.disabled = false;
                 this.$.stop.disabled = false;
-                if (this.stream) {
-                    this.$.me.play(URL.createObjectURL(this.stream));
-                }
+                this.$.me.play(URL.createObjectURL(this.stream));
             },
             message_join: function(o){
-                this.$.start.disabled = true;
                 this.$.next.disabled = false;
                 this.$.stop.disabled = false;
-                if (this.stream) {
-                    this.$.me.play(URL.createObjectURL(this.stream));
-                }
+                this.$.me.play(URL.createObjectURL(this.stream));
             },
             message_leave: function(o){
                 this.$.you.stop();
-                this.$.next.disabled = true;
-                this.$.stop.disabled = true;
                 if (this.leaveToNext) {
-                    this.$.start.disabled = true;
                     this.room.setStream(this.stream);
                     this.room.join("do not care");
                 }else{
@@ -224,6 +215,7 @@
             },
 
             start: function(){
+                this.$.start.disabled = true;
                 var self = this;
                 getUserMedia.call(navigator, {
                     audio: true,
@@ -237,31 +229,43 @@
                     self.room.setStream(self.stream);
                     self.room.join("do not care");
                 }, function(err){
-                    console.log('get media', err);
+                    self.showData('get media err');
+                    this.$.start.disabled = false;
                 });
             },
             next: function(){
-                this.$.start.disabled = true;
                 this.$.next.disabled = true;
                 this.$.stop.disabled = true;
                 this.leaveToNext = true;
                 this.room.leave();
             },
             stop: function(){
-                this.$.start.disabled = true;
                 this.$.next.disabled = true;
                 this.$.stop.disabled = true;
                 this.leaveToNext = false;
                 this.room.leave();
+                this.releaseStream();
             },
             leave: function(){
+                this.$.next.disabled = true;
+                this.$.stop.disabled = true;
                 this.leaveToNext = false;
                 if(this.$.start.disabled){
                     this.room.leave();
+                    this.releaseStream();
                 }
                 page('/');
             },
 
+            releaseStream: function(){
+                if(!this.stream){
+                    return;
+                }
+                this.stream.getTracks().forEach(function(track){
+                    track.stop();
+                });
+                this.stream = undefined;
+            },
             send: function(){
                 this.showData(this.$.input.value);
                 this.room.send(this.$.input.value);

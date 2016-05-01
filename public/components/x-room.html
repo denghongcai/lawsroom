@@ -12,7 +12,7 @@
                 lt-md-x-0 lt-md-y-0 lt-md-w-1 lt-md-h-1
                 lt-sm-x-0 lt-sm-y-0 lt-sm-w-1 lt-sm-h-1
                 lt-xs-x-0 lt-xs-y-0 lt-xs-w-1 lt-xs-h-1">
-                <div class="lt-body">
+                <div class="lt-body" style="text-align:center;">
                     <x-video id="v0"></x-video>
                 </div>
             </div>
@@ -21,7 +21,7 @@
                 lt-md-x-1 lt-md-y-0 lt-md-w-1 lt-md-h-1
                 lt-sm-x-1 lt-sm-y-0 lt-sm-w-1 lt-sm-h-1
                 lt-xs-x-0 lt-xs-y-1 lt-xs-w-1 lt-xs-h-1">
-                <div class="lt-body">
+                <div class="lt-body" style="text-align:center;">
                     <x-video id="v1"></x-video>
                 </div>
             </div>
@@ -30,7 +30,7 @@
                 lt-md-x-0 lt-md-y-1 lt-md-w-1 lt-md-h-1
                 lt-sm-x-0 lt-sm-y-1 lt-sm-w-1 lt-sm-h-1
                 lt-xs-x-0 lt-xs-y-2 lt-xs-w-1 lt-xs-h-1">
-                <div class="lt-body">
+                <div class="lt-body" style="text-align:center;">
                     <x-video id="v2"></x-video>
                 </div>
             </div>
@@ -39,7 +39,7 @@
                 lt-md-x-1 lt-md-y-1 lt-md-w-1 lt-md-h-1
                 lt-sm-x-1 lt-sm-y-1 lt-sm-w-1 lt-sm-h-1
                 lt-xs-x-0 lt-xs-y-3 lt-xs-w-1 lt-xs-h-1">
-                <div class="lt-body">
+                <div class="lt-body" style="text-align:center;">
                     <x-video id="v3"></x-video>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                 lt-md-x-0 lt-md-y-2 lt-md-w-1 lt-md-h-1
                 lt-sm-x-0 lt-sm-y-2 lt-sm-w-1 lt-sm-h-1
                 lt-xs-x-0 lt-xs-y-4 lt-xs-w-1 lt-xs-h-1">
-                <div class="lt-body">
+                <div class="lt-body" style="text-align:center;">
                     <x-video id="v4"></x-video>
                 </div>
             </div>
@@ -58,6 +58,7 @@
                 lt-sm-x-1 lt-sm-y-2 lt-sm-w-1 lt-sm-h-1
                 lt-xs-x-0 lt-xs-y-5 lt-xs-w-1 lt-xs-h-1">
                 <div class="lt-body">
+                    <paper-button id="join" disabled raised on-click="join">Join</paper-button>
                     <paper-button id="leave" raised on-click="leave">Leave</paper-button>
                 </div>
             </div>
@@ -118,26 +119,11 @@
                     type: String,
                     reflectToAttribute: true
                 },
-                i: {
-                    type: Number,
-                    notify: true,
-                    reflectToAttribute: true,
-                    observer: 'init',
-                    value: 0
-                },
                 me: {
                     type: String
                 },
                 room: {
                     type: Object
-                },
-                opened: {
-                    type: Boolean,
-                    value: false 
-                },
-                inroom: {
-                    type: Boolean,
-                    value: false 
                 },
                 videos: {
                     type: Object,
@@ -176,25 +162,17 @@
                 this.room.on("stream_remove", this.stream_remove.bind(this));
                 this.room.in();
             },
-            init: function(){
-                if(this.opened) {
-                    this.join();
-                }
-            },
 
             signal_open: function(){
-                this.opened = true;
-                if(this.i !== 0){
-                    this.join();
-                }
+                this.$.join.disabled = false;
             },
             signal_close: function(){
-                this.opened = false;
+                this.$.join.disabled = true;
                 this.removeVideos();
                 this.showData("notice: 网络连接已断开");
             },
             signal_error: function(){
-                this.opened = false;
+                this.$.join.disabled = true;
                 this.removeVideos();
                 this.showData("notice: 网络连接发生错误");
             },
@@ -217,21 +195,15 @@
                 }
             },
             message_create: function(o){
-                this.inroom = true;
-                if (this.stream) {
-                    this.addVideo(this.me, this.stream);
-                }
+                this.addVideo(this.me, this.stream);
                 this.showData("notice: 您已进入房间"+this.roomId);
             },
             message_join: function(o){
-                this.inroom = true;
-                if (this.stream) {
-                    this.addVideo(this.me, this.stream);
-                }
+                this.addVideo(this.me, this.stream);
                 this.showData("notice: 您已进入房间"+this.roomId);
             },
             message_leave: function(o){
-                this.inroom = false;
+                this.$.join.disabled = false;
                 this.removeVideos();
             },
             message_notice: function(o){
@@ -240,6 +212,8 @@
                         this.room.join(this.roomId);
                     }
                     if(o.Data === 'room_full'){
+                        this.showData("notice: 房间人数已经满了");
+                        this.$.join.disabled = false;
                     }
                 }
             },
@@ -276,6 +250,7 @@
             },
 
             join: function(){
+                this.$.join.disabled = true;
                 var self = this;
                 getUserMedia.call(navigator, {
                     audio: true,
@@ -289,16 +264,27 @@
                     self.room.setStream(s);
                     self.room.create(self.roomId);
                 }, function(err){
-                    console.log('get media', err);
+                    this.$.join.disabled = false;
+                    self.showData('get media error');
                 });
             },
             leave: function(){
-                if(this.inroom){
+                if(this.$.join.disabled){
                     this.room.leave();
+                    this.releaseStream();
                 }
                 page('/');
             },
 
+            releaseStream: function(){
+                if(!this.stream){
+                    return;
+                }
+                this.stream.getTracks().forEach(function(track){
+                    track.stop();
+                });
+                this.stream = undefined;
+            },
             send: function(){
                 this.showData(this.me +': ' +this.$.input.value);
                 this.room.send(this.$.input.value);
