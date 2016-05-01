@@ -107,6 +107,7 @@
             }, 
             ready: function(){
                 this.me = Date.now().toString(36);
+                this.showData("[NOTICE]: 你的临时ID是 " + this.me);
                 this.room = new Room({
                     signalServer: "wss://lawsroom.com:1443/signal/",
                     me: this.me,
@@ -151,11 +152,9 @@
                 this.showData("[NOTICE]: 连接发生错误, 请检查网络连接, 并刷新重连.");
             },
             peer_open: function(who){
-                console.log('rr: pc open', who);
                 this.showData("[NOTICE]: " + who + " 加入了");
             },
             peer_close: function(who){
-                console.log('rr: pc close', who);
                 this.$.you.stop();
                 this.showData("[NOTICE]: " + who + " 离开了");
             },
@@ -204,11 +203,9 @@
                 }
             },
             stream_add: function(who, stm){
-                console.log('rr: rs add', who);
                 this.$.you.play(URL.createObjectURL(stm));
             },
             stream_remove: function(who){
-                console.log('rr: rs remove', who);
                 this.$.you.stop();
             },
 
@@ -252,6 +249,7 @@
                     this.room.leave();
                     this.releaseStream();
                 }
+                this.$.chat.innerHTML = "";
                 page('/');
             },
 

@@ -118,7 +118,8 @@
                 }
             }, 
             ready: function(){
-                this.me = Date.now().toString();
+                this.me = Date.now().toString(36);
+                this.showData("[NOTICE]: 你的临时ID是 " + this.me);
                 this.room = new Room({
                     signalServer: "wss://lawsroom.com/signal/",
                     me: this.me,
@@ -254,6 +255,7 @@
                     this.room.leave();
                     this.releaseStream();
                 }
+                this.$.chat.innerHTML = "";
                 page('/');
             },
 

@@ -39,7 +39,6 @@ Room.prototype._signal_error = function(e) {
     }
 }
 Room.prototype._signalSend = function(message) {
-    console.log('o', message);
     this.signal.send(JSON.stringify(message));
 }
 Room.prototype._clean = function() {
@@ -110,7 +109,6 @@ Room.prototype.channelsCount = function() {
 
 Room.prototype._signal_message = function(e) {
     var o = JSON.parse(e.data);
-    console.log('i', o);
     switch (o.For) {
     case "create":
         this.id = o.Room;
@@ -170,8 +168,6 @@ Room.prototype._signal_message = function(e) {
             }, function(e) {
                 console.log('on got offer', 'create answer error', e);
             });
-        }, function(){
-            console.log('on got offer', 'set remote dsp ok');
         }, function(e){
             console.log('on got offer', 'set remote dsp error', e);
         });
@@ -187,7 +183,6 @@ Room.prototype._signal_message = function(e) {
                 }
                 self.peers[o.From].c.addIceCandidate(new RTCIceCandidate(cddt));
             }
-            console.log('on got answer', 'set remote dsp ok');
         }, function(e){
             console.log('on got answer', 'set remote dsp error', e);
         });
@@ -262,7 +257,6 @@ Room.prototype._join_older = function(o) {
         });
     });
     c.oniceconnectionstatechange = function(e) {
-        console.log("ice state on offer", c.iceConnectionState);
         if (c.iceConnectionState === 'connected') {
         }
         if (c.iceConnectionState === 'disconnected') {
@@ -311,7 +305,6 @@ Room.prototype._join_newer = function(o) {
         }
     }
     c.oniceconnectionstatechange = function(e) {
-        console.log("ice state on answer", c.iceConnectionState);
         if (c.iceConnectionState === 'connected') {
             if(typeof self.handles["peer_open"] === 'function'){
                 self.handles["peer_open"](o.Data, e);
