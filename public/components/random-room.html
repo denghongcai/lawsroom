@@ -46,12 +46,12 @@
                 lt-xs-x-0 lt-xs-y-2 lt-xs-w-1 lt-xs-h-1">
                 <div class="lt-body">
                     <div style="text-align:center;padding-top:19%;">
-                    <paper-button id="start" disabled raised on-click="start">Start</paper-button>
-                    <paper-button id="next" disabled raised on-click="next">Next</paper-button>
-                    <paper-button id="stop" disabled raised on-click="stop">Stop</paper-button>
+                    <paper-button id="start" disabled raised on-click="start">开始</paper-button>
+                    <paper-button id="next" disabled raised on-click="next">下一个</paper-button>
+                    <paper-button id="stop" disabled raised on-click="stop">停止</paper-button>
                     <br/>
                     <br/>
-                    <paper-button id="leave" raised on-click="leave">Leave</paper-button>
+                    <paper-button id="leave" raised on-click="leave">离开</paper-button>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                 lt-sm-x-1 lt-sm-y-0 lt-sm-w-1 lt-sm-h-2
                 lt-xs-x-0 lt-xs-y-3 lt-xs-w-1 lt-xs-h-1">
                 <div class="lt-body">
-                    <paper-material id="chat" style="width:100%;height:100%;display:block;"></paper-material>
+                    <paper-material id="chat" style="width:100%;height:100%;padding:5px;display:block;overflow-y:auto;"></paper-material>
                 </div>
             </div>
             <div class="lt
@@ -160,7 +160,7 @@
                 this.$.stop.disabled = true;
                 this.$.you.stop();
                 this.$.me.stop();
-                this.showData("网络连接已断开");
+                this.showData("[NOTICE]: 连接已断开, 请检查网络连接, 并刷新重连.");
             },
             signal_error: function(){
                 this.$.start.disabled = true;
@@ -168,22 +168,22 @@
                 this.$.stop.disabled = true;
                 this.$.you.stop();
                 this.$.me.stop();
-                this.showData("notice: 网络连接发生错误");
+                this.showData("[NOTICE]: 连接发生错误, 请检查网络连接, 并刷新重连.");
             },
             peer_open: function(who){
                 console.log('rr: pc open', who);
-                this.showData("有人来了");
+                this.showData("[NOTICE]: " + who + " 加入了");
             },
             peer_close: function(who){
                 console.log('rr: pc close', who);
                 this.$.you.stop();
-                this.showData("有人走了");
+                this.showData("[NOTICE]: " + who + " 离开了");
             },
             channel_open: function(who){
                 this.$.input.disabled = false;
             },
             channel_message: function(who, data){
-                this.showData(data);
+                this.showData('[' + who + '] : ' + data);
             },
             channel_close: function(who){
                 if(this.room.channelsCount() === 0){
@@ -213,13 +213,13 @@
             message_notice: function(o){
                 if(typeof o.Data === "string"){
                     if(o.Data === 'no_pair_room'){
-                        this.showData("没有合适的房间, 正在创建房间并等待他人进入");
+                        this.showData("[NOTICE]: 没有合适的房间, 正在创建房间等待他人进入");
                         this.room.create(Date.now().toString());
                     }
                 }
                 if(typeof o.Data === "object"){
                     if(typeof o.Data.online === 'number'){
-                        this.showData("当前在线人数: " + o.Data.online);
+                        this.showData("[NOTICE]: 当前在线人数 " + o.Data.online);
                     }
                 }
             },
@@ -247,7 +247,7 @@
                     self.room.setStream(self.stream);
                     self.room.join("do not care");
                 }, function(err){
-                    self.showData('get media err');
+                    self.showData('[NOTICE]: ' + '无法获取摄像头信息');
                     this.$.start.disabled = false;
                 });
             },
@@ -285,7 +285,7 @@
                 this.stream = undefined;
             },
             send: function(){
-                this.showData(this.$.input.value);
+                this.showData('[' + this.me +']: ' +this.$.input.value);
                 this.room.send(this.$.input.value);
                 this.$.input.value = "";
             },
