@@ -6,6 +6,20 @@
 <link rel="import" href="/components/x-video.html">
 <dom-module id="x-room">
     <template>
+        <style>
+            paper-button {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+                --paper-button-disabled: {
+                    background-color: var(--paper-grey-300) !important;
+                    color: black !important;
+                };
+            }
+        </style>
         <div class="lt-container lt-lg-h-3 lt-md-h-4 lt-sm-h-6 lt-xs-h-11">
             <div class="lt
                 lt-lg-x-0 lt-lg-y-0 lt-lg-w-1 lt-lg-h-1
@@ -58,8 +72,10 @@
                 lt-sm-x-1 lt-sm-y-2 lt-sm-w-1 lt-sm-h-1
                 lt-xs-x-0 lt-xs-y-5 lt-xs-w-1 lt-xs-h-1">
                 <div class="lt-body">
+                    <div style="text-align:center;padding-top:29%;">
                     <paper-button id="join" disabled raised on-click="join">Join</paper-button>
                     <paper-button id="leave" raised on-click="leave">Leave</paper-button>
+                    </div>
                 </div>
             </div>
             <div class="lt

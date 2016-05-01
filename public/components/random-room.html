@@ -6,6 +6,20 @@
 <link rel="import" href="/components/x-video.html">
 <dom-module id="random-room">
     <template>
+        <style>
+            paper-button {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+                --paper-button-disabled: {
+                    background-color: var(--paper-grey-300) !important;
+                    color: black !important;
+                };
+            }
+        </style>
         <div class="lt-container lt-lg-h-3 lt-md-h-3 lt-sm-h-5 lt-xs-h-8">
             <div class="lt
                 lt-lg-x-0 lt-lg-y-0 lt-lg-w-1 lt-lg-h-1
@@ -31,10 +45,14 @@
                 lt-sm-x-0 lt-sm-y-2 lt-sm-w-1 lt-sm-h-1
                 lt-xs-x-0 lt-xs-y-2 lt-xs-w-1 lt-xs-h-1">
                 <div class="lt-body">
+                    <div style="text-align:center;padding-top:19%;">
                     <paper-button id="start" disabled raised on-click="start">Start</paper-button>
                     <paper-button id="next" disabled raised on-click="next">Next</paper-button>
                     <paper-button id="stop" disabled raised on-click="stop">Stop</paper-button>
+                    <br/>
+                    <br/>
                     <paper-button id="leave" raised on-click="leave">Leave</paper-button>
+                    </div>
                 </div>
             </div>
             <div class="lt
