@@ -30,10 +30,8 @@ func main(){
         return false
     }, nil)
     r.Handle("/signal/{id}", s)
-    r.Methods("GET").Path("/hello").HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-        w.Header().Set("Content-Type", "application/json")
-        w.Write([]byte("[\"World\"]"))
-    })
+    r.Methods("GET").Path("/random").HandlerFunc(redirect)
+    r.Methods("GET").Path("/room/{id}").HandlerFunc(redirect)
 
     n := negroni.New()
     n.Use(negroni.NewRecovery())

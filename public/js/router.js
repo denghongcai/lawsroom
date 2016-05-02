@@ -36,6 +36,6 @@ page('*', function(ctx, next){
 }, _a);
 
 page({
-    hashbang: true
+    hashbang: false
 });
 
