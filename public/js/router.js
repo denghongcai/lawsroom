@@ -9,32 +9,27 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 ga('create', 'UA-77171491-1', 'auto');
 
 function _a(ctx){
-    console.log('a', ctx.path);
     ga('set', 'page', ctx.path);
     ga('send', 'pageview');
 }
 
 page('/', function(ctx, next){
-    console.log('root');
     tb.hidden = true;
     pages.select('x-door');
     next();
 }, _a);
 page('/random', function(ctx, next){
-    console.log('random');
     tb.hidden = false;
     pages.select('random-room');
     next();
 }, _a);
 page('/room/:id', function(ctx, next){
-    console.log('room');
     tb.hidden = false;
     room.roomId = ctx.params.id;
     pages.select('x-room');
     next();
 }, _a);
 page('*', function(ctx, next){
-    console.log('*');
     tb.hidden = true;
     pages.select('x-door');
     next();
