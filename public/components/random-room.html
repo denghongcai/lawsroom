@@ -106,8 +106,8 @@
                 }
             }, 
             ready: function(){
-                this.me = Date.now().toString(36);
-                this.showData("[NOTICE]: 你的临时ID是 " + this.me);
+                this.me = id();
+                this.showData("[NOTICE]: 你的临时名字是 " + name(this.me));
                 this.room = new Room({
                     signalServer: "wss://lawsroom.com:1443/signal/",
                     me: this.me,
@@ -152,17 +152,17 @@
                 this.showData("[NOTICE]: 连接发生错误, 请检查网络连接, 并刷新重连.");
             },
             peer_open: function(who){
-                this.showData("[NOTICE]: " + who + " 加入了");
+                this.showData("[NOTICE]: " + name(who) + " 加入了");
             },
             peer_close: function(who){
                 this.$.you.stop();
-                this.showData("[NOTICE]: " + who + " 离开了");
+                this.showData("[NOTICE]: " + name(who) + " 离开了");
             },
             channel_open: function(who){
                 this.$.input.disabled = false;
             },
             channel_message: function(who, data){
-                this.showData('[' + who + '] : ' + data);
+                this.showData('[' + name(who) + '] : ' + data);
             },
             channel_close: function(who){
                 if(this.room.channelsCount() === 0){
@@ -263,7 +263,7 @@
                 this.stream = undefined;
             },
             send: function(){
-                this.showData('[' + this.me +']: ' +this.$.input.value);
+                this.showData('[' + name(this.me) + ']: ' + this.$.input.value);
                 this.room.send(this.$.input.value);
                 this.$.input.value = "";
             },
