@@ -6,7 +6,7 @@
     <template>
         <style>
             .container {
-                position:absolute; top:80%;left:50%;transform:translate(-50%,-50%);
+                position:absolute; top:75%;left:50%;transform:translate(-50%,-50%);
             }
             div{
                 text-align: center;
@@ -15,23 +15,7 @@
             .footer {
                 position:absolute; bottom:5px;left:50%;transform:translate(-50%,-50%);
             }
-            .bg { 
-                position: fixed;
-                top: -50%;
-                left: -50%;
-                width: 200%;
-                height: 200%;
-            }
-            .bg img {
-                position: absolute; 
-                top: 0; 
-                left: 0; 
-                right: 0; 
-                bottom: 0; 
-                margin: auto; 
-                min-width: 50%;
-                min-height: 50%;
-            }
+
             paper-button {
                 background-color: var(--google-green-500);
                 color: white;
@@ -41,9 +25,6 @@
                 };
             }
         </style>
-        <div class="bg">
-            <img src="/img/bg.jpeg"/>
-        </div>
         <div class="container">
             <div><paper-input id="input" placeholder="输入房间名字按回车进入"></paper-input></div>
                 <div>OR</div>
