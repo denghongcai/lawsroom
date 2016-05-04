@@ -3,37 +3,17 @@ package main
 import(
     "net/http"
     "log"
-    "os"
 
     "github.com/gorilla/mux"
     "github.com/unrolled/secure"
     "github.com/phyber/negroni-gzip/gzip"
     "github.com/rs/cors"
     "github.com/codegangsta/negroni"
-    "git.txthinking.com/txthinking/signal"
 )
 
 func main(){
     r := mux.NewRouter()
-    signal.ROOM_CAPACITY = 2
-    s := signal.New(func(r *http.Request) bool {
-        allows := []string{
-            "https://lawsroom.com",
-            "https://127.0.0.1",
-        }
-        origin := r.Header.Get("Origin")
-        for _, v := range allows {
-            if v == origin {
-                return true
-            }
-        }
-        return false
-    }, &Dog{})
-    r.Handle("/signal/{id}", s)
-    r.Methods("GET").Path("/hello").HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-        w.Header().Set("Content-Type", "application/json")
-        w.Write([]byte("[\"World\"]"))
-    })
+    r.Handle("/signal/{id}", getSignalHandle())
 
     n := negroni.New()
     n.Use(negroni.NewRecovery())
@@ -60,20 +40,7 @@ func main(){
     n.Use(gzip.Gzip(gzip.DefaultCompression))
     n.UseHandler(r)
 
-    //go func() {
-        //if err := http.ListenAndServe(":80", n); err != nil {
-            //log.Fatal("http", err)
-        //}
-    //}()
-    cert := "/etc/letsencrypt/live/lawsroom.com/cert.pem"
-    privkey := "/etc/letsencrypt/live/lawsroom.com/privkey.pem"
-    if _, err := os.Open(cert); err != nil {
-        cert = "./cert.pem"
-    }
-    if _, err := os.Open(privkey); err != nil {
-        privkey = "./privkey.pem"
-    }
-    if err := http.ListenAndServeTLS(":1443", cert, privkey, n); err != nil {
+    if err := http.ListenAndServeTLS(":1443", "./cert.pem", "./privkey.pem", n); err != nil {
         log.Fatal("https", err)
     }
 }

@@ -3,35 +3,20 @@ package main
 import(
     "net/http"
     "log"
-    "os"
 
     "github.com/gorilla/mux"
     "github.com/unrolled/secure"
     "github.com/phyber/negroni-gzip/gzip"
     "github.com/rs/cors"
     "github.com/codegangsta/negroni"
-    "git.txthinking.com/txthinking/signal"
 )
 
 func main(){
     r := mux.NewRouter()
-    signal.ROOM_CAPACITY = 5
-    s := signal.New(func(r *http.Request) bool {
-        allows := []string{
-            "https://lawsroom.com",
-            "https://127.0.0.1",
-        }
-        origin := r.Header.Get("Origin")
-        for _, v := range allows {
-            if v == origin {
-                return true
-            }
-        }
-        return false
-    }, nil)
-    r.Handle("/signal/{id}", s)
+    r.Handle("/signal/{id}", getSignalHandle())
     r.Methods("GET").Path("/random").HandlerFunc(redirect)
     r.Methods("GET").Path("/room/{id}").HandlerFunc(redirect)
+    r.Methods("GET").Path("/unsupport").HandlerFunc(redirect)
 
     n := negroni.New()
     n.Use(negroni.NewRecovery())
@@ -59,20 +44,12 @@ func main(){
     n.Use(negroni.NewStatic(http.Dir("public")))
     n.UseHandler(r)
 
-    //go func() {
-        //if err := http.ListenAndServe(":80", n); err != nil {
-            //log.Fatal("http", err)
-        //}
-    //}()
-    cert := "/etc/letsencrypt/live/lawsroom.com/cert.pem"
-    privkey := "/etc/letsencrypt/live/lawsroom.com/privkey.pem"
-    if _, err := os.Open(cert); err != nil {
-        cert = "./cert.pem"
-    }
-    if _, err := os.Open(privkey); err != nil {
-        privkey = "./privkey.pem"
-    }
-    if err := http.ListenAndServeTLS(":443", cert, privkey, n); err != nil {
+    go func() {
+        if err := http.ListenAndServe(":80", n); err != nil {
+            log.Fatal("http", err)
+        }
+    }()
+    if err := http.ListenAndServeTLS(":443", "./cert.pem", "./privkey.pem", n); err != nil {
         log.Fatal("https", err)
     }
 }

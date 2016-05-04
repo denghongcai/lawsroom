@@ -1,0 +1,38 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/paper-input/paper-input.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<dom-module id="un-support">
+    <template>
+        <style>
+            .container {
+                position:absolute; top:25%;left:50%;transform:translate(-50%,-50%);
+            }
+            div{
+                text-align: center;
+                /*color: var(--google-green-500);*/
+            }
+            .footer {
+                position:absolute; bottom:5px;left:50%;transform:translate(-50%,-50%);
+            }
+
+        </style>
+        <div class="container">
+            不支持当前浏览器
+            <br/>
+            建议使用: Chrome, Firfox 浏览器
+        </div>
+        <div class="footer">
+            <div>&copy;2016 北京动合无形科技有限公司</div>
+        </div>
+        <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"
+                            on-keys-pressed="room"></iron-a11y-keys>
+    </template>
+    <script>
+        Polymer({
+            is: "un-support",
+            properties: {
+            }
+        });
+    </script>
+</dom-module>

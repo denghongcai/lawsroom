@@ -38,6 +38,10 @@ page('/room/:id', function(ctx, next){
     pages.select('x-room');
     next();
 }, clearHomeStyle, _a);
+page('/unsupport', function(ctx, next){
+    pages.select('un-support');
+    next();
+}, clearHomeStyle, _a);
 page('*', function(ctx, next){
     pages.select('x-door');
     next();
@@ -46,4 +50,6 @@ page('*', function(ctx, next){
 page({
     hashbang: false
 });
+
+if(!getUserMedia || !RTCSessionDescription || !RTCPeerConnection || !RTCIceCandidate || !WebSocket) page('/unsupport');
 
