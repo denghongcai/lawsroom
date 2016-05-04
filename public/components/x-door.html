@@ -8,8 +8,9 @@
             .container {
                 position:absolute; top:75%;left:50%;transform:translate(-50%,-50%);
             }
-            div{
+            div, a{
                 text-align: center;
+                text-decoration: none;
                 color: var(--google-green-500);
             }
             .footer {
@@ -31,6 +32,7 @@
             <div><paper-button raised on-click="random">随机进入房间</paper-button></div>
         </div>
         <div class="footer">
+            <div><a href="/docs" target="_blank">开发者</a></div>
             <div>&copy;2016 北京动合无形科技有限公司</div>
         </div>
         <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"

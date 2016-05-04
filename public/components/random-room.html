@@ -197,7 +197,7 @@
                 if(typeof o.Data === "string"){
                     if(o.Data === 'no_pair_room'){
                         this.showData("[NOTICE]: 没有合适的房间, 正在创建房间等待他人进入");
-                        this.room.create(Date.now().toString());
+                        this.room.create(uuid.v4());
                     }
                 }
                 if(typeof o.Data === "object"){

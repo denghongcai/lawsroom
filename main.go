@@ -9,6 +9,7 @@ import(
     "github.com/phyber/negroni-gzip/gzip"
     "github.com/rs/cors"
     "github.com/codegangsta/negroni"
+    "git.txthinking.com/txthinking/law/api"
 )
 
 func main(){
@@ -17,6 +18,7 @@ func main(){
     r.Methods("GET").Path("/random").HandlerFunc(redirect)
     r.Methods("GET").Path("/room/{id}").HandlerFunc(redirect)
     r.Methods("GET").Path("/unsupport").HandlerFunc(redirect)
+    r.Methods("GET").Path("/api/v1/room/prepare").HandlerFunc(api.RoomPrepare)
 
     n := negroni.New()
     n.Use(negroni.NewRecovery())
