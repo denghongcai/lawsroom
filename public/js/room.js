@@ -14,7 +14,7 @@ Room.prototype.on = function(evt, handle) {
     this.handles[evt] = handle;
 }
 Room.prototype.in = function() {
-    this.signal = new WebSocket(this.signalServer + this.me);
+    this.signal = new WebSocket(this.signalServer + encodeURIComponent(this.me));
     this.signal.onopen = this._signal_open.bind(this);
     this.signal.onclose = this._signal_close.bind(this);
     this.signal.onerror = this._signal_error.bind(this);
