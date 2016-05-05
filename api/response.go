@@ -4,22 +4,22 @@ import(
     "encoding/json"
 )
 
-func ok(v interface{}) []byte {
+func _ok(v interface{}) []byte {
     data := map[string]interface{}{
-        "error": nil,
-        "result": v,
+        "Error": nil,
+        "Result": v,
     }
     r, _ := json.Marshal(data)
     return r
 }
 
-func err(code int, message string) []byte {
+func _error(code int, message string) []byte {
     data := map[string]interface{}{
-        "error": map[string]interface{}{
-            "code": code,
-            "message": message,
+        "Error": map[string]interface{}{
+            "Code": code,
+            "Message": message,
         },
-        "result": nil,
+        "Result": nil,
     }
     r, _ := json.Marshal(data)
     return r

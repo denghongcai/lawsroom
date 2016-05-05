@@ -11,4 +11,5 @@ Welcome to ROOM's documentation!
 
    define
    room_prepare
+   room_capacity
 

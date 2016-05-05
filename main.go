@@ -19,6 +19,7 @@ func main(){
     r.Methods("GET").Path("/room/{id}").HandlerFunc(redirect)
     r.Methods("GET").Path("/unsupport").HandlerFunc(redirect)
     r.Methods("GET").Path("/api/v1/room/prepare").HandlerFunc(api.RoomPrepare)
+    r.Methods("POST").Path("/api/v1/room/capacity").HandlerFunc(api.RoomCapacity)
 
     n := negroni.New()
     n.Use(negroni.NewRecovery())
