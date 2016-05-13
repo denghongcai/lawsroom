@@ -6,14 +6,14 @@ import(
 
     "github.com/gorilla/mux"
     "github.com/unrolled/secure"
-    "github.com/phyber/negroni-gzip/gzip"
+    //"github.com/phyber/negroni-gzip/gzip"
     "github.com/rs/cors"
     "github.com/codegangsta/negroni"
 )
 
 func main(){
     r := mux.NewRouter()
-    r.Handle("/signal/{id}", getSignalHandle())
+    r.Handle("/signal/r/{id}", getSignalHandle())
 
     n := negroni.New()
     n.Use(negroni.NewRecovery())
@@ -24,8 +24,8 @@ func main(){
         AllowCredentials: true,
     }))
     n.Use(negroni.HandlerFunc(secure.New(secure.Options{
-        AllowedHosts: []string{"lawsroom.com:1443"},
-        SSLRedirect: true,
+        AllowedHosts: []string{"lawsroom.com"},
+        SSLRedirect: false,
         SSLHost: "lawsroom.com",
         SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
         STSSeconds: 315360000,
@@ -37,11 +37,11 @@ func main(){
         BrowserXssFilter: true,
         ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://lawsroom.com wss://lawsroom.com https://fonts.googleapis.com https://fonts.gstatic.com https://127.0.0.1",
     }).HandlerFuncWithNext))
-    n.Use(gzip.Gzip(gzip.DefaultCompression))
+    //n.Use(gzip.Gzip(gzip.DefaultCompression))
     n.UseHandler(r)
 
-    if err := http.ListenAndServeTLS(":1443", "./cert.pem", "./privkey.pem", n); err != nil {
-        log.Fatal("https", err)
+    if err := http.ListenAndServe(":1007", n); err != nil {
+        log.Fatal("http", err)
     }
 }
 

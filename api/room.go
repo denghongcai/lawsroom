@@ -6,7 +6,7 @@ import(
     "encoding/json"
     "github.com/satori/go.uuid"
     "io/ioutil"
-    "git.txthinking.com/txthinking/signal"
+    "github.com/txthinking/signal"
 )
 
 type PrepareOutput struct {

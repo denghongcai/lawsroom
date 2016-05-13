@@ -2,7 +2,7 @@
 
 ### 请求
 
-`POST /api/v1/room/capacity`
+`POST /v1/room/capacity`
 
 ### 参数
 
@@ -21,5 +21,5 @@
 ### 例子
 
 ```
-$ curl -s -X POST -d '{"Name": "room_name"}' https://lawsroom.com/api/v1/room/capacity
+$ curl -s -X POST -d '{"Name": "room_name"}' https://api.lawsroom.com/v1/room/capacity
 ```

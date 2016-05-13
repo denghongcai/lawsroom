@@ -2,7 +2,7 @@ package main
 
 import(
     "net/http"
-    "git.txthinking.com/txthinking/signal"
+    "github.com/txthinking/signal"
 )
 
 func getSignalHandle() *signal.Signal{

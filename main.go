@@ -6,20 +6,20 @@ import(
 
     "github.com/gorilla/mux"
     "github.com/unrolled/secure"
-    "github.com/phyber/negroni-gzip/gzip"
+    //"github.com/phyber/negroni-gzip/gzip"
     "github.com/rs/cors"
     "github.com/codegangsta/negroni"
-    "git.txthinking.com/txthinking/law/api"
+    "github.com/txthinking/law/api"
 )
 
 func main(){
     r := mux.NewRouter()
-    r.Handle("/signal/{id}", getSignalHandle())
+    r.Handle("/signal/_/{id}", getSignalHandle())
     r.Methods("GET").Path("/random").HandlerFunc(redirect)
     r.Methods("GET").Path("/room/{id}").HandlerFunc(redirect)
     r.Methods("GET").Path("/unsupport").HandlerFunc(redirect)
-    r.Methods("GET").Path("/api/v1/room/prepare").HandlerFunc(api.RoomPrepare)
-    r.Methods("POST").Path("/api/v1/room/capacity").HandlerFunc(api.RoomCapacity)
+    r.Methods("GET").Path("/v1/room/prepare").HandlerFunc(api.RoomPrepare)
+    r.Methods("POST").Path("/v1/room/capacity").HandlerFunc(api.RoomCapacity)
 
     n := negroni.New()
     n.Use(negroni.NewRecovery())
@@ -31,7 +31,7 @@ func main(){
     }))
     n.Use(negroni.HandlerFunc(secure.New(secure.Options{
         AllowedHosts: []string{"lawsroom.com"},
-        SSLRedirect: true,
+        SSLRedirect: false,
         SSLHost: "lawsroom.com",
         SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
         STSSeconds: 315360000,
@@ -41,19 +41,19 @@ func main(){
         CustomFrameOptionsValue: "SAMEORIGIN",
         ContentTypeNosniff: true,
         BrowserXssFilter: true,
-        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://lawsroom.com https://lawsroom.com:1443 wss://lawsroom.com wss://lawsroom.com:1443 https://fonts.googleapis.com https://fonts.gstatic.com https://www.google-analytics.com https://127.0.0.1",
+        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://lawsroom.com wss://lawsroom.com https://fonts.googleapis.com https://fonts.gstatic.com https://www.google-analytics.com https://127.0.0.1",
     }).HandlerFuncWithNext))
-    n.Use(gzip.Gzip(gzip.DefaultCompression))
-    n.Use(negroni.NewStatic(http.Dir("public")))
+    //n.Use(gzip.Gzip(gzip.DefaultCompression))
+    //n.Use(negroni.NewStatic(http.Dir("public")))
     n.UseHandler(r)
 
-    go func() {
-        if err := http.ListenAndServe(":80", n); err != nil {
+    //go func() {
+        if err := http.ListenAndServe(":1006", n); err != nil {
             log.Fatal("http", err)
         }
-    }()
-    if err := http.ListenAndServeTLS(":443", "./cert.pem", "./privkey.pem", n); err != nil {
-        log.Fatal("https", err)
-    }
+    //}()
+    //if err := http.ListenAndServeTLS(":443", "./cert.pem", "./privkey.pem", n); err != nil {
+        //log.Fatal("https", err)
+    //}
 }
 

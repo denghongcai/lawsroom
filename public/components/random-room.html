@@ -113,7 +113,7 @@
                 this.me = id();
                 this.showData("[NOTICE]: 你的临时名字是 " + name(this.me));
                 this.room = new Room({
-                    signalServer: "wss://lawsroom.com:1443/signal/",
+                    signalServer: "wss://lawsroom.com/signal/r/",
                     me: this.me,
                     iceServers: [
                         {url: "stun:lawsroom.com:3478"},

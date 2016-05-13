@@ -2,7 +2,7 @@
 
 ### 请求
 
-`GET /api/v1/room/prepare`
+`GET /v1/room/prepare`
 
 ### 参数
 
@@ -19,5 +19,5 @@
 ### 例子
 
 ```
-$ curl -s -X GET https://lawsroom.com/api/v1/room/prepare
+$ curl -s -X GET https://api.lawsroom.com/v1/room/prepare
 ```

@@ -4,7 +4,7 @@
 请求
 ~~~~
 
--  接口所有的请求URL前缀均为: ``https://lawsroom.com``.
+-  接口所有的请求URL前缀均为: ``https://api.lawsroom.com``.
 -  请求如果带有body, 那么格式必须为json.
 
 响应

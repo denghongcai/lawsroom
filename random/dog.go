@@ -1,7 +1,7 @@
 package main
 
 import(
-    "git.txthinking.com/txthinking/signal"
+    "github.com/txthinking/signal"
     "net/http"
     "errors"
 )
