@@ -38,8 +38,8 @@ page('/room/:id', function(ctx, next){
     pages.select('x-room');
     next();
 }, clearHomeStyle, _a);
-page('/unsupport', function(ctx, next){
-    pages.select('un-support');
+page('/support', function(ctx, next){
+    pages.select('x-support');
     next();
 }, clearHomeStyle, _a);
 page('*', function(ctx, next){
@@ -51,5 +51,5 @@ page({
     hashbang: false
 });
 
-if(!getUserMedia || !RTCSessionDescription || !RTCPeerConnection || !RTCIceCandidate || !WebSocket) page('/unsupport');
+if(!getUserMedia || !RTCSessionDescription || !RTCPeerConnection || !RTCIceCandidate || !WebSocket) page('/support');
 

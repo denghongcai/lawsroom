@@ -253,8 +253,10 @@ Room.prototype._join_older = function(o) {
                 Data: osd
             });
         }, function(e){
-            console.log('create offer error', e);
+            console.log('on create offer', 'set local dsp error', e);
         });
+    }, function(e){
+        console.log('create offer error', e);
     });
     c.oniceconnectionstatechange = function(e) {
         if (c.iceConnectionState === 'connected') {

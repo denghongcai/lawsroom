@@ -16,7 +16,7 @@ func main(){
     r.Host("lawsroom.com").Methods("GET").Path("/signal/_/{id}").Handler(getSignalHandle())
     r.Host("lawsroom.com").Methods("GET").Path("/random").HandlerFunc(redirect)
     r.Host("lawsroom.com").Methods("GET").Path("/room/{id}").HandlerFunc(redirect)
-    r.Host("lawsroom.com").Methods("GET").Path("/unsupport").HandlerFunc(redirect)
+    r.Host("lawsroom.com").Methods("GET").Path("/support").HandlerFunc(redirect)
     r.Host("api.lawsroom.com").Methods("GET").Path("/v1/room/prepare").HandlerFunc(api.RoomPrepare)
     r.Host("api.lawsroom.com").Methods("POST").Path("/v1/room/status").HandlerFunc(api.RoomStatus)
 

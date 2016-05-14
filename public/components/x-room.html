@@ -169,7 +169,7 @@
                 this.$.input.disabled = false;
             },
             channel_message: function(who, data){
-                this.showData('[' + name(who) + '] : ' + data);
+                this.showData('[' + name(who) + ']: ' + data);
             },
             channel_close: function(who){
                 if(this.room.channelsCount() === 0){
@@ -178,11 +178,11 @@
             },
             message_create: function(o){
                 this.addVideo(this.me, this.stream);
-                this.showData("[NOTICE] : 你已加入房间 "+this.roomId);
+                this.showData("[NOTICE]: 你已加入房间 "+this.roomId);
             },
             message_join: function(o){
                 this.addVideo(this.me, this.stream);
-                this.showData("[NOTICE] : 你已加入房间 "+this.roomId);
+                this.showData("[NOTICE]: 你已加入房间 "+this.roomId);
             },
             message_leave: function(o){
                 this.$.join.disabled = false;

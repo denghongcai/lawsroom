@@ -26,11 +26,12 @@
         <link rel="import" href="/bower_components/paper-header-panel/paper-header-panel.html">
         <link rel="import" href="/bower_components/paper-toolbar/paper-toolbar.html">
         <link rel="import" href="/bower_components/paper-button/paper-button.html">
+        <link rel="import" href="/bower_components/paper-badge/paper-badge.html">
 
         <link rel="import" href="/components/x-door.html">
         <link rel="import" href="/components/random-room.html">
         <link rel="import" href="/components/x-room.html">
-        <link rel="import" href="/components/un-support.html">
+        <link rel="import" href="/components/x-support.html">
         <style is="custom-style">
             paper-toolbar {
                 background-color: var(--google-green-500);
@@ -43,18 +44,25 @@
             iron-pages {
                 padding-top: 5px;
             }
+            paper-badge {
+                --paper-badge-background: var(--google-yellow-500);
+            }
         </style>
     </head>
     <body class="fullbleed vertical layout">
         <paper-header-panel class="flex">
             <paper-toolbar>
-            <span class="title">ROOM</span>
+            <span class="title">
+                <span id="title">ROOM</span>
+                <paper-badge for="title" label="α" title="Alpha" id="online">
+                </paper-badge>
+            </span>
             </paper-toolbar>
             <iron-pages id="pages" attr-for-selected="id" selected="x-door">
                 <x-door id="x-door"></x-door>
                 <random-room id="random-room"></random-room>
                 <x-room id="x-room"></x-room>
-                <un-support id="un-support"></un-support>
+                <x-support id="x-support"></x-support>
             </iron-pages>
         </paper-header-panel>
         <script src="/dist/js/router.js"></script>
