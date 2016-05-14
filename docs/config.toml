@@ -1,0 +1,69 @@
+baseurl = "https://docs.lawsroom.com/"
+languageCode = "zh-cn"
+title = "Room 开发者文档"
+theme = "hugo-material-docs"
+metadataformat = "yaml"
+canonifyurls = true
+googleAnalytics = "UA-77171491-3"
+
+[params]
+	# General information
+	author = "lawsroom.com"
+	description = "Room 开发者文档"
+	copyright = "lawsroom.com"
+
+	version = "1.0.0"
+	logo = "images/logo.png"
+	favicon = ""
+
+	permalink = "#"
+
+	# Custom assets
+	custom_css = []
+	custom_js  = []
+
+	# Syntax highlighting theme
+	highlight_css  = ""
+
+	[params.palette]
+    	primary = "green"
+    	accent  = "yellow"
+
+    [params.font]
+    	text = "Ubuntu"
+    	code = "Ubuntu Mono"
+
+
+[social]
+	twitter = ""
+    github  = ""
+
+
+[[menu.main]]
+	name   = "接口约定"
+	url    = "/"
+	weight = 0
+
+[[menu.main]]
+	name   = "获取新房间"
+	url    = "room/prepare/"
+	weight = 10
+
+[[menu.main]]
+	name   = "获取房间状态"
+	url    = "room/status/"
+	weight = 20
+
+
+[[menu.main]]
+	name   = "License"
+	url    = "https://opensource.org/licenses/MIT"
+	weight = 40
+
+
+[blackfriday]
+	smartypants	= true
+	fractions = true
+	smartDashes = true
+	plainIDAnchors = true
+
