@@ -1,0 +1,23 @@
+theme="material-design"
+baseurl = "https://blog.lawsroom.com"
+languageCode = "zh-cn"
+title = "Room Blog"
+MetaDataFormat = "toml"
+paginate = 9 # To specify a multiple of 3
+disqusShortname = "roomblog" # optional
+copyright = "© 2016 lawsroom.com"
+
+[params]
+#    description = "Your Site Description" # optional
+#    twitter = "Your Twitter Name" # optional
+#    github = "Your Github Name" # optional
+#    facebook = "Your facebook Name" # optional
+#    gplus = "Your Google+ profile name" # optional
+#    linkedin = "Your LinkedIn Name" # optional
+    headerCover = "images/headerCover.jpg" # optional
+    footerCover = "images/footerCover.jpg" # optional
+    googleAnalyticsUserID = "UA-77171491-2" # optional
+
+[permalinks]
+    post = "/:year/:month/:day/:title/" # optional
+

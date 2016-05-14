@@ -21,16 +21,16 @@ func RoomPrepare(w http.ResponseWriter, r *http.Request){
     w.Write(_ok(output))
 }
 
-type CapacityInput struct {
+type StatusInput struct {
     Name string
 }
-type CapacityOutput struct {
+type StatusOutput struct {
      Capacity int
      Used int
      Idle int
 }
-func RoomCapacity(w http.ResponseWriter, r *http.Request){
-    input := CapacityInput{}
+func RoomStatus(w http.ResponseWriter, r *http.Request){
+    input := StatusInput{}
     defer r.Body.Close()
     var err error
     var body []byte
@@ -48,7 +48,7 @@ func RoomCapacity(w http.ResponseWriter, r *http.Request){
         u = len(signal.Rooms[input.Name].Peers)
     }
     i := c - u
-    output := CapacityOutput{
+    output := StatusOutput{
         Capacity: c,
         Used: u,
         Idle: i,

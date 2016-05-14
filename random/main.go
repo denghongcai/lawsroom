@@ -6,14 +6,13 @@ import(
 
     "github.com/gorilla/mux"
     "github.com/unrolled/secure"
-    //"github.com/phyber/negroni-gzip/gzip"
     "github.com/rs/cors"
     "github.com/codegangsta/negroni"
 )
 
 func main(){
     r := mux.NewRouter()
-    r.Handle("/signal/r/{id}", getSignalHandle())
+    r.Host("lawsroom.com").Methods("GET").Path("/signal/r/{id}").Handler(getSignalHandle())
 
     n := negroni.New()
     n.Use(negroni.NewRecovery())
@@ -37,7 +36,6 @@ func main(){
         BrowserXssFilter: true,
         ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://lawsroom.com wss://lawsroom.com https://fonts.googleapis.com https://fonts.gstatic.com https://127.0.0.1",
     }).HandlerFuncWithNext))
-    //n.Use(gzip.Gzip(gzip.DefaultCompression))
     n.UseHandler(r)
 
     if err := http.ListenAndServe(":1007", n); err != nil {
