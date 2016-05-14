@@ -124,8 +124,8 @@
                     signalServer: "wss://lawsroom.com/signal/_/",
                     me: this.me,
                     iceServers: [
-                        {url: "stun:lawsroom.com:3478"},
-                        {url: "turn:lawsroom.com:3478"}
+                        {url: "stun:stun.lawsroom.com:3478"},
+                        {url: "turn:stun.lawsroom.com:3478"}
                     ]
                 });
                 this.room.on("signal_open", this.signal_open.bind(this));
