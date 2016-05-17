@@ -123,10 +123,21 @@
                 this.room = new Room({
                     signalServer: "wss://lawsroom.com/signal/_/",
                     me: this.me,
-                    iceServers: [
-                        {url: "stun:stun.lawsroom.com:3478"},
-                        {url: "turn:stun.lawsroom.com:3478"}
-                    ]
+                    iceServers: [{
+                        urls: ["stun:stun.lawsroom.com:443"]
+                    }, {
+                        urls: "turn:stun.lawsroom.com:443",
+                        username: "yiquganchangduan",
+                        credential: "tianyahechumizhiyin"
+                    }, {
+                        urls: "turn:stun.lawsroom.com:443?transport=tcp",
+                        username: "yiquganchangduan",
+                        credential: "tianyahechumizhiyin"
+                    }, {
+                        urls: "turn:stun.lawsroom.com:443?transport=udp",
+                        username: "yiquganchangduan",
+                        credential: "tianyahechumizhiyin"
+                    }]
                 });
                 this.room.on("signal_open", this.signal_open.bind(this));
                 this.room.on("signal_close", this.signal_close.bind(this));

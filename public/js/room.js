@@ -259,6 +259,7 @@ Room.prototype._join_older = function(o) {
         console.log('create offer error', e);
     });
     c.oniceconnectionstatechange = function(e) {
+        console.log('offer', c.iceConnectionState);
         if (c.iceConnectionState === 'connected') {
         }
         if (c.iceConnectionState === 'disconnected') {
@@ -307,6 +308,7 @@ Room.prototype._join_newer = function(o) {
         }
     }
     c.oniceconnectionstatechange = function(e) {
+        console.log('anwser', c.iceConnectionState);
         if (c.iceConnectionState === 'connected') {
             if(typeof self.handles["peer_open"] === 'function'){
                 self.handles["peer_open"](o.Data, e);
