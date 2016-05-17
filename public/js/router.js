@@ -38,10 +38,6 @@ page('/room/:id', function(ctx, next){
     pages.select('x-room');
     next();
 }, clearHomeStyle, _a);
-page('/support', function(ctx, next){
-    pages.select('x-support');
-    next();
-}, clearHomeStyle, _a);
 page('*', function(ctx, next){
     pages.select('x-door');
     next();
@@ -50,18 +46,4 @@ page('*', function(ctx, next){
 page({
     hashbang: false
 });
-
-function support(){
-    if(bowser.chrome){
-        return true;
-    }
-    if(bowser.firefox){
-        return true;
-    }
-    if(bowser.opera){
-        return true;
-    }
-    return false;
-}
-if(!support()){page('/support')};
 
