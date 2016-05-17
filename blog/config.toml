@@ -14,8 +14,8 @@ copyright = "© 2016 lawsroom.com"
 #    facebook = "Your facebook Name" # optional
 #    gplus = "Your Google+ profile name" # optional
 #    linkedin = "Your LinkedIn Name" # optional
-    headerCover = "images/headerCover.jpg" # optional
-    footerCover = "images/footerCover.jpg" # optional
+    headerCover = "header.png" # optional
+    footerCover = "footer.png" # optional
     googleAnalyticsUserID = "UA-77171491-2" # optional
 
 [permalinks]

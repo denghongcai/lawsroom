@@ -13,7 +13,7 @@ googleAnalytics = "UA-77171491-3"
 	copyright = "lawsroom.com"
 
 	version = "1.0.0"
-	logo = "logo.jpg"
+	logo = "logo.png"
 	favicon = "favicon.ico"
 
 	permalink = "#"

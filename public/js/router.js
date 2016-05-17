@@ -15,7 +15,7 @@ function _a(ctx, next){
 }
 
 function homeStyle(ctx, next){
-    body.style.backgroundImage = "url(/img/bg.jpeg)";
+    body.style.backgroundImage = "url(/img/bg.png)";
     tb.hidden = true;
     next();
 }
@@ -51,5 +51,17 @@ page({
     hashbang: false
 });
 
-if(!getUserMedia || !RTCSessionDescription || !RTCPeerConnection || !RTCIceCandidate || !WebSocket) page('/support');
+function support(){
+    if(bowser.chrome){
+        return true;
+    }
+    if(bowser.firefox){
+        return true;
+    }
+    if(bowser.opera){
+        return true;
+    }
+    return false;
+}
+if(!support()){page('/support')};
 
