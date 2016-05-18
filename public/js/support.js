@@ -2,6 +2,9 @@ function support(){
     if(bowser.blink){
         return true;
     }
+    if(bowser.chrome){
+        return true;
+    }
     return false;
 }
 if(!support()){

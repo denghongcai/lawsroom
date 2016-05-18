@@ -227,7 +227,6 @@ function id(){
     return uuid.v4().replace(/-/g, "") + ':' + names[getRandomInt(0, names.length-1)];
 }
 function name(id){
-    console.log(id)
     var name = id.split(':')[1];
     if(!name || name.length > 5){
         return "一坨屎";

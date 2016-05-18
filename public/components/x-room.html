@@ -288,6 +288,7 @@
                 var text = he.escape(data);
                 var old = this.$.chat.innerHTML;
                 this.$.chat.innerHTML = old +"<br/>" + text;
+                this.$.chat.scrollTop = this.$.chat.scrollHeight;
             }
         });
     </script>
