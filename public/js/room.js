@@ -262,17 +262,21 @@ Room.prototype._join_older = function(o) {
         console.log('offer', c.iceConnectionState);
         if (c.iceConnectionState === 'connected') {
         }
-        if (c.iceConnectionState === 'disconnected') {
-            if(typeof self.handles["peer_close"] === 'function'){
-                self.handles["peer_close"](o.Data, e);
-            }
-        }
         if (c.iceConnectionState === 'completed') {
             if(typeof self.handles["peer_open"] === 'function'){
                 self.handles["peer_open"](o.Data, e);
             }
         }
-        if (c.iceConnectionState === 'closed') {}
+        if (c.iceConnectionState === 'closed') {
+            if(typeof self.handles["peer_close"] === 'function'){
+                self.handles["peer_close"](o.Data, e);
+            }
+        }
+        if (c.iceConnectionState === 'disconnected') {
+            if(typeof self.handles["peer_close"] === 'function'){
+                self.handles["peer_close"](o.Data, e);
+            }
+        }
     }
     c.onsignalingstatechange = function(e) {
     }
@@ -314,13 +318,18 @@ Room.prototype._join_newer = function(o) {
                 self.handles["peer_open"](o.Data, e);
             }
         }
+        if (c.iceConnectionState === 'completed') {
+        }
         if (c.iceConnectionState === 'disconnected') {
             if(typeof self.handles["peer_close"] === 'function'){
                 self.handles["peer_close"](o.Data, e);
             }
         }
-        if (c.iceConnectionState === 'completed') {}
-        if (c.iceConnectionState === 'closed') {}
+        if (c.iceConnectionState === 'closed') {
+            if(typeof self.handles["peer_close"] === 'function'){
+                self.handles["peer_close"](o.Data, e);
+            }
+        }
     }
     c.onsignalingstatechange = function(e) {
     }

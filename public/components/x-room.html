@@ -247,11 +247,14 @@
                 var self = this;
                 getUserMedia.call(navigator, {
                     audio: true,
+                    video: true
+                    /*
                     video: {
                         width: 512,
                         height: 512,
                         frameRate: { ideal: 10, max: 15 }
                     }
+                    */
                 }, function(s){
                     self.stream = s;
                     self.room.setStream(s);
