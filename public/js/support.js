@@ -1,4 +1,7 @@
 function support(){
+    if(/micromessenger/.test(navigator.userAgent.toLowerCase())){
+        return false;
+    }
     if(bowser.blink){
         return true;
     }
@@ -8,6 +11,7 @@ function support(){
     return false;
 }
 if(!support()){
-    document.body.innerHTML = '<div style="text-align:center;">请使用最新版的Chrome浏览器</div>';
+    body.style.backgroundImage = "none";
+    document.body.innerHTML = '<div style="text-align:center;">请使用Chrome浏览器</div>';
 };
 
