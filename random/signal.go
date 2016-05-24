@@ -10,7 +10,7 @@ func getSignalHandle() *signal.Signal{
     return signal.New(func(r *http.Request) bool {
         allows := []string{
             "https://lawsroom.com",
-            "https://127.0.0.1",
+            "https://law.txthinking.com",
         }
         origin := r.Header.Get("Origin")
         for _, v := range allows {

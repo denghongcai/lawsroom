@@ -12,6 +12,9 @@
         <script src="/bower_components/bowser/src/bowser.js"></script>
         <link rel="stylesheet" type="text/css" href="/node_modules/layout-grid/dist/css/layout-grid.min.css" />
         <script src="/node_modules/layout-grid/dist/js/layout-grid.min.js"></script>
+        <script src="/dist/js/superagent.js"></script>
+        <script>window._debug=true;</script>
+        <script src="/dist/js/log.js"></script>
         <script src="/dist/js/adapter.js"></script>
         <script src="/dist/js/room.js"></script>
         <script src="/dist/js/name.js"></script>
@@ -25,6 +28,7 @@
         <link rel="import" href="/bower_components/iron-pages/iron-pages.html">
         <link rel="import" href="/bower_components/paper-header-panel/paper-header-panel.html">
         <link rel="import" href="/bower_components/paper-toolbar/paper-toolbar.html">
+        <link rel="import" href="/bower_components/paper-button/paper-button.html">
 
         <link rel="import" href="/components/x-door.html">
         <link rel="import" href="/components/random-room.html">
@@ -48,6 +52,17 @@
             <span class="title">
                 ROOM
             </span>
+            <paper-button onclick="javascript:(function(){
+                  var request = require('superagent');
+                  request.post('https://file.txthinking.com')
+                         .type('application/json')
+                         .send({browser: bowser, userAgent: navigator.userAgent, logs: logs})
+                         .end(function(err, res){
+                            var subject = encodeURIComponent('遇到BUG');
+                            var body = encodeURIComponent('请在链接下面描述你遇到的BUG('+res.text+'):');
+                            window.open('mailto:contact@lawsroom.com?subject='+subject+'&body='+body);
+                         });
+            }());">发现BUG</paper-button>
             </paper-toolbar>
             <iron-pages id="pages" attr-for-selected="id" selected="x-door">
                 <x-door id="x-door"></x-door>
