@@ -12,20 +12,20 @@ import(
 
 func main(){
     r := mux.NewRouter()
-    r.Host("lawsroom.com").Methods("GET").Path("/signal/r/{id}").Handler(getSignalHandle())
+    r.Host("law.txthinking.com").Methods("GET").Path("/signal/r/{id}").Handler(getSignalHandle())
 
     n := negroni.New()
     n.Use(negroni.NewRecovery())
     n.Use(negroni.NewLogger())
     n.Use(cors.New(cors.Options{
-        AllowedOrigins: []string{"https://lawsroom.com", "https://127.0.0.1"},
+        AllowedOrigins: []string{"https://law.txthinking.com", "https://127.0.0.1"},
         AllowedMethods: []string{"GET", "POST", "DELETE", "PUT"},
         AllowCredentials: true,
     }))
     n.Use(negroni.HandlerFunc(secure.New(secure.Options{
-        AllowedHosts: []string{"lawsroom.com"},
+        AllowedHosts: []string{"law.txthinking.com"},
         SSLRedirect: false,
-        SSLHost: "lawsroom.com",
+        SSLHost: "law.txthinking.com",
         SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
         STSSeconds: 315360000,
         STSIncludeSubdomains: true,
@@ -34,11 +34,11 @@ func main(){
         CustomFrameOptionsValue: "SAMEORIGIN",
         ContentTypeNosniff: true,
         BrowserXssFilter: true,
-        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://lawsroom.com wss://lawsroom.com https://fonts.googleapis.com https://fonts.gstatic.com https://127.0.0.1",
+        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://law.txthinking.com wss://law.txthinking.com https://fonts.googleapis.com https://fonts.gstatic.com https://127.0.0.1",
     }).HandlerFuncWithNext))
     n.UseHandler(r)
 
-    if err := http.ListenAndServe(":1007", n); err != nil {
+    if err := http.ListenAndServe(":1009", n); err != nil {
         log.Fatal("http", err)
     }
 }
