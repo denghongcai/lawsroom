@@ -2,30 +2,71 @@ package main
 
 import(
     "net/http"
-    "log"
+    "os"
 
     "github.com/gorilla/mux"
     "github.com/unrolled/secure"
     "github.com/rs/cors"
     "github.com/codegangsta/negroni"
+    "github.com/codegangsta/cli"
 )
 
+var domain string
+var listen string
+var origins []string
+
 func main(){
+    app := cli.NewApp()
+    app.Name = "Random of Law"
+    app.Usage = "Law's room."
+    app.Author = "Cloud"
+    app.Email = "cloud@txthinking.com"
+    app.Flags = []cli.Flag{
+        cli.StringFlag{
+            Name: "domain",
+            Value: "",
+            Usage: "Your domain name.",
+            Destination: &domain,
+        },
+        cli.StringFlag{
+            Name: "listen",
+            Value: "",
+            Usage: "Listen address.",
+            Destination: &listen,
+        },
+        cli.StringSliceFlag{
+            Name: "origin",
+            Usage: "Allow origins for CORS, can repeat more times.",
+        },
+    }
+    app.Action = func(c *cli.Context) error {
+        if c.String("domain") == "" {
+            return cli.NewExitError("Domain is empty.", 86)
+        }
+        if c.String("listen") == "" {
+            return cli.NewExitError("Listen address is empty.", 86)
+        }
+        origins = c.GlobalStringSlice("origin")
+        return run()
+    }
+    app.Run(os.Args)
+}
+
+func run() error{
     r := mux.NewRouter()
-    r.Host("law.txthinking.com").Methods("GET").Path("/signal/r/{id}").Handler(getSignalHandle())
+    r.Host(domain).Methods("GET").Path("/signal/r/{id}").Handler(getSignalHandle(origins))
 
     n := negroni.New()
     n.Use(negroni.NewRecovery())
     n.Use(negroni.NewLogger())
     n.Use(cors.New(cors.Options{
-        AllowedOrigins: []string{"https://law.txthinking.com", "https://127.0.0.1"},
+        AllowedOrigins: origins,
         AllowedMethods: []string{"GET", "POST", "DELETE", "PUT"},
         AllowCredentials: true,
     }))
     n.Use(negroni.HandlerFunc(secure.New(secure.Options{
-        AllowedHosts: []string{"law.txthinking.com"},
+        AllowedHosts: []string{domain},
         SSLRedirect: false,
-        SSLHost: "law.txthinking.com",
         SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
         STSSeconds: 315360000,
         STSIncludeSubdomains: true,
@@ -34,12 +75,10 @@ func main(){
         CustomFrameOptionsValue: "SAMEORIGIN",
         ContentTypeNosniff: true,
         BrowserXssFilter: true,
-        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://law.txthinking.com wss://law.txthinking.com https://fonts.googleapis.com https://fonts.gstatic.com https://127.0.0.1",
+        ContentSecurityPolicy: "default-src 'self'",
     }).HandlerFuncWithNext))
     n.UseHandler(r)
 
-    if err := http.ListenAndServe(":1009", n); err != nil {
-        log.Fatal("http", err)
-    }
+    return http.ListenAndServe(listen, n)
 }
 
