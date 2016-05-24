@@ -33,8 +33,8 @@ func main(){
         cli.StringFlag{
             Name: "apidomain",
             Value: "",
-            Usage: "Your domain name.",
-            Destination: &domain,
+            Usage: "Your api domain name.",
+            Destination: &apiDomain,
         },
         cli.StringFlag{
             Name: "listen",
