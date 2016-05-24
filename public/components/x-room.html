@@ -110,6 +110,9 @@
                     type: Object,
                     value: {v0: "", v1: "", v2: "", v3: "", v4: ""}
                 },
+                lastShow: {
+                    type: String
+                },
                 target: {
                     type: Object,
                     value: function() {
@@ -288,10 +291,14 @@
                 this.$.input.value = "";
             },
             showData: function(data){
+                if(/^\[NOTICE\]/.test(data) && data === this.lastShow){
+                    return;
+                }
                 var text = he.escape(data);
                 var old = this.$.chat.innerHTML;
                 this.$.chat.innerHTML = old +"<br/>" + text;
                 this.$.chat.scrollTop = this.$.chat.scrollHeight;
+                this.lastShow = data;
             }
         });
     </script>

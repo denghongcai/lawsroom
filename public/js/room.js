@@ -22,23 +22,27 @@ Room.prototype.in = function() {
 }
 
 Room.prototype._signal_open = function(e) {
+    log('r:e:signal_open');
     if(typeof this.handles["signal_open"] === 'function'){
         this.handles["signal_open"](e);
     }
 }
 Room.prototype._signal_close = function(e) {
+    log('r:e:signal_close');
     this._clean();
     if(typeof this.handles["signal_close"] === 'function'){
         this.handles["signal_close"](e);
     }
 }
 Room.prototype._signal_error = function(e) {
+    log('r:e:signal_error');
     this._clean();
     if(typeof this.handles["signal_error"] === 'function'){
         this.handles["signal_error"](e);
     }
 }
 Room.prototype._signalSend = function(message) {
+    log('r:o:'+JSON.stringify(message));
     this.signal.send(JSON.stringify(message));
 }
 Room.prototype._clean = function() {
@@ -108,17 +112,20 @@ Room.prototype.channelsCount = function() {
 }
 
 Room.prototype._signal_message = function(e) {
+    log('r:i:'+e.data);
     var o = JSON.parse(e.data);
     switch (o.For) {
     case "create":
         this.id = o.Room;
         if(typeof this.handles["message_create"] === 'function'){
+            log('r:e:message_create');
             this.handles["message_create"](o);
         }
         break;
     case "join":
         this.id = o.Room;
         if(typeof this.handles["message_join"] === 'function'){
+            log('r:e:message_join');
             this.handles["message_join"](o);
         }
         break;
@@ -131,6 +138,7 @@ Room.prototype._signal_message = function(e) {
     case "leave":
         this._clean();
         if(typeof this.handles["message_leave"] === 'function'){
+            log('r:e:message_leave');
             this.handles["message_leave"](o);
         }
         break;
@@ -163,13 +171,13 @@ Room.prototype._signal_message = function(e) {
                         Data: asd
                     });
                 }, function(e){
-                    console.log('on got offer', 'set local dsp error', e);
+                    log('r:e:on got offer, set local dsp error');
                 });
             }, function(e) {
-                console.log('on got offer', 'create answer error', e);
+                log('r:e:on got offer, create answer error');
             });
         }, function(e){
-            console.log('on got offer', 'set remote dsp error', e);
+            log('r:e:on got offer, set remote dsp error');
         });
         break;
     case 'answer':
@@ -184,11 +192,12 @@ Room.prototype._signal_message = function(e) {
                 self.peers[o.From].c.addIceCandidate(new RTCIceCandidate(cddt));
             }
         }, function(e){
-            console.log('on got answer', 'set remote dsp error', e);
+            log('r:e:on got answer, set remote dsp error');
         });
         break;
     case 'notice':
         if(typeof this.handles["message_notice"] === 'function'){
+            log('r:e:message_notice');
             this.handles["message_notice"](o);
         }
         break;
@@ -207,11 +216,13 @@ Room.prototype._join_older = function(o) {
     }
     c.onaddstream = function(e) {
         if(typeof self.handles["stream_add"] === 'function'){
+            log('r:e:'+o.Data+':stream_add');
             self.handles["stream_add"](o.Data, e.stream, e);
         }
     }
     c.onremovestream = function(e) {
         if(typeof self.handles["stream_remove"] === 'function'){
+            log('r:e:'+o.Data+':stream_remove');
             self.handles["stream_remove"](o.Data, e);
         }
     }
@@ -230,16 +241,19 @@ Room.prototype._join_older = function(o) {
     dataChan.onopen = function(e) {
         self.channels[o.Data] = dataChan;
         if(typeof self.handles["channel_open"] === 'function'){
+            log('r:e:'+o.Data+':channel_open');
             self.handles["channel_open"](o.Data, e);
         }
     }
     dataChan.onmessage = function(e) {
         if(typeof self.handles["channel_message"] === 'function'){
+            log('r:e:'+o.Data+':channel_message');
             self.handles["channel_message"](o.Data, e.data, e);
         }
     }
     dataChan.onclose = function(e) {
         if(typeof self.handles["channel_close"] === 'function'){
+            log('r:e:'+o.Data+':channel_close');
             self.handles["channel_close"](o.Data, e);
         }
     }
@@ -253,32 +267,46 @@ Room.prototype._join_older = function(o) {
                 Data: osd
             });
         }, function(e){
-            console.log('on create offer', 'set local dsp error', e);
+            log('r:error:'+o.Data+':set local dsp error on create offer');
         });
     }, function(e){
-        console.log('create offer error', e);
+        log('r:error:'+o.Data+':create offer error');
     });
     c.oniceconnectionstatechange = function(e) {
-        console.log('offer', c.iceConnectionState);
+        log('r:ics:offer:'+o.Data +':'+c.iceConnectionState);
         if (c.iceConnectionState === 'connected') {
-        }
-        if (c.iceConnectionState === 'completed') {
             if(typeof self.handles["peer_open"] === 'function'){
+                log('r:e:'+o.Data+':peer_open');
                 self.handles["peer_open"](o.Data, e);
             }
         }
-        if (c.iceConnectionState === 'closed') {
-            if(typeof self.handles["peer_close"] === 'function'){
-                self.handles["peer_close"](o.Data, e);
+        if (c.iceConnectionState === 'completed') {
+            if(typeof self.handles["peer_open"] === 'function'){
+                log('r:e:'+o.Data+':peer_open');
+                self.handles["peer_open"](o.Data, e);
             }
         }
         if (c.iceConnectionState === 'disconnected') {
             if(typeof self.handles["peer_close"] === 'function'){
+                log('r:e:'+o.Data+':peer_close');
+                self.handles["peer_close"](o.Data, e);
+            }
+        }
+        if (c.iceConnectionState === 'closed') {
+            if(typeof self.handles["peer_close"] === 'function'){
+                log('r:e:'+o.Data+':peer_close');
+                self.handles["peer_close"](o.Data, e);
+            }
+        }
+        if (c.iceConnectionState === 'failed') {
+            if(typeof self.handles["peer_close"] === 'function'){
+                log('r:e:'+o.Data+':peer_close');
                 self.handles["peer_close"](o.Data, e);
             }
         }
     }
     c.onsignalingstatechange = function(e) {
+        log('r:ss:offer:'+o.Data+':' + c.signalingState);
     }
 }
 
@@ -292,11 +320,13 @@ Room.prototype._join_newer = function(o) {
     }
     c.onaddstream = function(e) {
         if(typeof self.handles["stream_add"] === 'function'){
+            log('r:e:'+o.Data+':stream_add');
             self.handles["stream_add"](o.Data, e.stream, e);
         }
     }
     c.onremovestream = function(e) {
         if(typeof self.handles["stream_remove"] === 'function'){
+            log('r:e:'+o.Data+':stream_remove');
             self.handles["stream_remove"](o.Data, e);
         }
     }
@@ -312,42 +342,59 @@ Room.prototype._join_newer = function(o) {
         }
     }
     c.oniceconnectionstatechange = function(e) {
-        console.log('anwser', c.iceConnectionState);
+        log('r:ics:anwser:'+o.Data+':' + c.iceConnectionState);
         if (c.iceConnectionState === 'connected') {
             if(typeof self.handles["peer_open"] === 'function'){
+                log('r:e:'+o.Data+':peer_open');
                 self.handles["peer_open"](o.Data, e);
             }
         }
         if (c.iceConnectionState === 'completed') {
+            if(typeof self.handles["peer_open"] === 'function'){
+                log('r:e:'+o.Data+':peer_open');
+                self.handles["peer_open"](o.Data, e);
+            }
         }
         if (c.iceConnectionState === 'disconnected') {
             if(typeof self.handles["peer_close"] === 'function'){
+                log('r:e:'+o.Data+':peer_close');
                 self.handles["peer_close"](o.Data, e);
             }
         }
         if (c.iceConnectionState === 'closed') {
             if(typeof self.handles["peer_close"] === 'function'){
+                log('r:e:'+o.Data+':peer_close');
+                self.handles["peer_close"](o.Data, e);
+            }
+        }
+        if (c.iceConnectionState === 'failed') {
+            if(typeof self.handles["peer_close"] === 'function'){
+                log('r:e:'+o.Data+':peer_close');
                 self.handles["peer_close"](o.Data, e);
             }
         }
     }
     c.onsignalingstatechange = function(e) {
+        log('r:ss:anwser:'+o.Data+':' + c.signalingState);
     }
     c.ondatachannel = function(e) {
         var dataChan = e.channel;
         dataChan.onopen = function(e) {
             self.channels[o.Data] = dataChan;
             if(typeof self.handles["channel_open"] === 'function'){
+                log('r:e:'+o.Data+':channel_open');
                 self.handles["channel_open"](o.Data, e);
             }
         }
         dataChan.onmessage = function(e) {
             if(typeof self.handles["channel_message"] === 'function'){
+                log('r:e:'+o.Data+':channel_message');
                 self.handles["channel_message"](o.Data, e.data, e);
             }
         }
         dataChan.onclose = function(e) {
             if(typeof self.handles["channel_close"] === 'function'){
+                log('r:e:'+o.Data+':channel_close');
                 self.handles["channel_close"](o.Data, e);
             }
         }
