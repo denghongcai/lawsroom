@@ -1,0 +1,4 @@
+User-agent: *
+Allow:
+Disallow:
+Sitemap: https://docs.lawsroom.com/sitemap.xml
