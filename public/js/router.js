@@ -10,6 +10,7 @@ function _a(ctx, next){
     ga('send', 'pageview');
 }
 
+var pages,room,tb,body;
 function homeStyle(ctx, next){
     body.style.backgroundImage = "url(/img/bg.png)";
     tb.hidden = true;
@@ -20,11 +21,6 @@ function clearHomeStyle(ctx, next){
     tb.hidden = false;
     next();
 }
-
-var pages,room,tb,body;
-
-//setTimeout(function(){
-
 window.addEventListener('WebComponentsReady', function(e) {
     console.log('Components are ready');
 
@@ -55,6 +51,4 @@ window.addEventListener('WebComponentsReady', function(e) {
         hashbang: false
     });
 });
-
-//}, 5000);
 

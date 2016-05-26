@@ -14,7 +14,7 @@ function support(){
     return false;
 }
 if(!support()){
-    body.style.backgroundImage = "none";
-    document.body.innerHTML = '<div style="text-align:center;">请使用Chrome浏览器</div>';
+    document.body.style.backgroundImage = "none";
+    document.body.innerHTML = '<div style="text-align:center;">请使用Chrome/Firefox/Opera浏览器</div>';
 };
 
