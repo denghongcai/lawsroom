@@ -8,6 +8,9 @@ function support(){
     if(bowser.chrome){
         return true;
     }
+    if(bowser.firefox){
+        return true;
+    }
     return false;
 }
 if(!support()){
