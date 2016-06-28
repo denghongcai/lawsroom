@@ -50,12 +50,12 @@
                 lt-xs-x-0 lt-xs-y-2 lt-xs-w-1 lt-xs-h-1">
                 <div class="lt-body">
                     <div style="text-align:center;padding-top:19%;">
-                    <paper-button id="start" disabled raised on-click="start">开始</paper-button>
-                    <paper-button id="next" disabled raised on-click="next">下一个</paper-button>
-                    <paper-button id="stop" disabled raised on-click="stop">停止</paper-button>
+                    <paper-button id="start" disabled raised on-click="start">[[lang('start')]]</paper-button>
+                    <paper-button id="next" disabled raised on-click="next">[[lang('next')]]</paper-button>
+                    <paper-button id="stop" disabled raised on-click="stop">[[lang('stop')]]</paper-button>
                     <br/>
                     <br/>
-                    <paper-button id="leave" raised on-click="leave">离开</paper-button>
+                    <paper-button id="leave" raised on-click="leave">[[lang('leave')]]</paper-button>
                     </div>
                 </div>
             </div>
@@ -66,7 +66,7 @@
                 lt-xs-x-0 lt-xs-y-3 lt-xs-w-1 lt-xs-h-1">
                 <div class="lt-body">
                     <paper-material id="chat" style="width:100%;height:91%;padding:0px 5px 5px 5px;display:block;overflow-y:auto;"></paper-material>
-                    <paper-input placeholder="回车发送消息" disabled id="input"></paper-input>
+                    <paper-input placeholder="[[lang('send_message')]]" disabled id="input"></paper-input>
                 </div>
             </div>
             <div class="lt
@@ -76,8 +76,8 @@
                 lt-xs-x-0 lt-xs-y-4 lt-xs-w-1 lt-xs-h-1">
                 <div class="lt-body">
                     <div style="text-align:center;padding-top:19%;">
-                        在线人数:
-                        <paper-icon-button title="当前在线人数" id="number" icon="account-box" alt="person">
+                        [[lang('online_number')]]:
+                        <paper-icon-button title="[[lang('online_number')]]" id="number" icon="account-box" alt="person">
                         </paper-icon-button>
                         <paper-badge for="number" label="0" id="online">
                         </paper-badge>
@@ -114,7 +114,7 @@
             }, 
             ready: function(){
                 this.me = id();
-                this.showData("[NOTICE]: 你的临时名字是 " + name(this.me));
+                this.showData("[NOTICE]: "+this.lang('notice_your_name')+" " + name(this.me));
                 this.room = new Room({
                     signalServer: "wss://lawsroom.com/signal/r/",
                     me: this.me,
@@ -159,7 +159,7 @@
                 this.$.stop.disabled = true;
                 this.$.you.stop();
                 this.$.me.stop();
-                this.showData("[NOTICE]: 连接已断开, 请检查网络连接, 并刷新重连.");
+                this.showData("[NOTICE]: "+this.lang('notice_disconnect'));
             },
             signal_error: function(){
                 this.$.start.disabled = true;
@@ -167,14 +167,14 @@
                 this.$.stop.disabled = true;
                 this.$.you.stop();
                 this.$.me.stop();
-                this.showData("[NOTICE]: 连接发生错误, 请检查网络连接, 并刷新重连.");
+                this.showData("[NOTICE]: "+this.lang('notice_disconnect'));
             },
             peer_open: function(who){
-                this.showData("[NOTICE]: " + name(who) + " 加入了");
+                this.showData("[NOTICE]: " + name(who) + " "+this.lang('joined'));
             },
             peer_close: function(who){
                 this.$.you.stop();
-                this.showData("[NOTICE]: " + name(who) + " 离开了");
+                this.showData("[NOTICE]: " + name(who) + " "+this.lang('left'));
             },
             channel_open: function(who){
                 this.$.input.disabled = false;
@@ -210,7 +210,7 @@
             message_notice: function(o){
                 if(typeof o.Data === "string"){
                     if(o.Data === 'no_pair_room'){
-                        this.showData("[NOTICE]: 没有合适的房间, 正在创建房间等待他人进入");
+                        this.showData("[NOTICE]: "+this.lang('notice_no_pair_room'));
                         this.room.create(uuid.v4());
                     }
                 }
@@ -245,7 +245,7 @@
                     self.room.setStream(self.stream);
                     self.room.join("do not care");
                 }, function(err){
-                    self.showData('[NOTICE]: ' + '无法获取摄像头信息');
+                    self.showData('[NOTICE]: ' + this.lang('notice_unable_access_camera'));
                     this.$.start.disabled = false;
                 });
             },
@@ -297,6 +297,63 @@
                 this.$.chat.innerHTML = old +"<br/>" + text;
                 this.$.chat.scrollTop = this.$.chat.scrollHeight;
                 this.lastShow = data;
+            },
+            lang: function(key){
+                var i18n = {
+                    start: {
+                        'en-US': 'Start',
+                        'zh-CN': '开始'
+                    },
+                    next: {
+                        'en-US': 'Next',
+                        'zh-CN': '下一个'
+                    },
+                    stop: {
+                        'en-US': 'Stop',
+                        'zh-CN': '停止'
+                    },
+                    leave: {
+                        'en-US': 'Leave',
+                        'zh-CN': '离开'
+                    },
+                    send_message: {
+                        'en-US': 'Type ... Press Enter',
+                        'zh-CN': '回车发送消息'
+                    },
+                    online_number: {
+                        'en-US': 'Online number',
+                        'zh-CN': '在线人数'
+                    },
+                    notice_your_name: {
+                        'en-US': 'Your name is',
+                        'zh-CN': '你的临时名字是'
+                    },
+                    notice_disconnect: {
+                        'en-US': 'Connection has been disconnected, try refresh page',
+                        'zh-CN': '连接已断开, 请检查网络连接, 并刷新重连'
+                    },
+                    notice_joined: {
+                        'en-US': 'joined',
+                        'zh-CN': '加入了'
+                    },
+                    notice_left: {
+                        'en-US': 'left',
+                        'zh-CN': '离开了'
+                    },
+                    notice_no_pair_room: {
+                        'en-US': 'No waiting room, will create a new room',
+                        'zh-CN': '没有合适的房间, 正在创建房间等待他人进入'
+                    },
+                    notice_unable_access_camera: {
+                        'en-US': 'Unable to access the camera',
+                        'zh-CN': '无法获取摄像头信息'
+                    }
+                };
+                var _ = 'en-US';
+                if(navigator.language === 'zh-CN'){
+                    _ = 'zh-CN';
+                }
+                return i18n[key][_];
             }
         });
     </script>

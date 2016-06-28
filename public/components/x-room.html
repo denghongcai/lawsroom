@@ -73,8 +73,8 @@
                 lt-xs-x-0 lt-xs-y-5 lt-xs-w-1 lt-xs-h-1">
                 <div class="lt-body">
                     <div style="text-align:center;padding-top:29%;">
-                    <paper-button id="join" disabled raised on-click="join">加入</paper-button>
-                    <paper-button id="leave" raised on-click="leave">离开</paper-button>
+                    <paper-button id="join" disabled raised on-click="join">[[lang('join')]]</paper-button>
+                    <paper-button id="leave" raised on-click="leave">[[lang('leave')]]</paper-button>
                     </div>
                 </div>
             </div>
@@ -85,7 +85,7 @@
                 lt-xs-x-0 lt-xs-y-6 lt-xs-w-1 lt-xs-h-1">
                 <div class="lt-body">
                     <paper-material id="chat" style="width:100%;height:91%;padding: 0px 5px 5px 5px;display:block;overflow:auto;"></paper-material>
-                    <paper-input placeholder="回车发送消息" disabled id="input"></paper-input>
+                    <paper-input placeholder="[[lang('send_message')]]" disabled id="input"></paper-input>
                 </div>
             </div>
         </div>
@@ -122,7 +122,7 @@
             }, 
             ready: function(){
                 this.me = id();
-                this.showData("[NOTICE]: 你的临时名字是 " + name(this.me));
+                this.showData("[NOTICE]: "+this.lang('notice_your_name')+" " + name(this.me));
                 this.room = new Room({
                     signalServer: "wss://lawsroom.com/signal/_/",
                     me: this.me,
@@ -165,18 +165,18 @@
             signal_close: function(){
                 this.$.join.disabled = true;
                 this.removeVideos();
-                this.showData("[NOTICE]: 连接已断开, 请检查网络连接, 并刷新重连.");
+                this.showData("[NOTICE]: "+this.lang('notice_disconnect'));
             },
             signal_error: function(){
                 this.$.join.disabled = true;
                 this.removeVideos();
-                this.showData("[NOTICE]: 连接发生错误, 请检查网络连接, 并刷新重连.");
+                this.showData("[NOTICE]: "+this.lang('notice_disconnect'));
             },
             peer_open: function(who){
-                this.showData("[NOTICE]: " + name(who) + " 加入了");
+                this.showData("[NOTICE]: " + name(who) + " "+this.lang('notice_joined'));
             },
             peer_close: function(who){
-                this.showData("[NOTICE]: " + name(who) + " 离开了");
+                this.showData("[NOTICE]: " + name(who) + " "+this.lang('notice_left'));
                 this.removeVideo(who);
             },
             channel_open: function(who){
@@ -192,11 +192,11 @@
             },
             message_create: function(o){
                 this.addVideo(this.me, this.stream);
-                this.showData("[NOTICE]: 你已加入房间 "+this.roomId);
+                this.showData("[NOTICE]: "+this.lang('notice_you_joined')+" "+this.roomId);
             },
             message_join: function(o){
                 this.addVideo(this.me, this.stream);
-                this.showData("[NOTICE]: 你已加入房间 "+this.roomId);
+                this.showData("[NOTICE]: "+this.lang('notice_you_joined')+" "+this.roomId);
             },
             message_leave: function(o){
                 this.$.join.disabled = false;
@@ -208,7 +208,7 @@
                         this.room.join(this.roomId);
                     }
                     if(o.Data === 'room_full'){
-                        this.showData("[NOTICE]: 房间人数已满");
+                        this.showData("[NOTICE]: "+this.lang('notice_full'));
                         this.$.join.disabled = false;
                     }
                 }
@@ -264,7 +264,7 @@
                     self.room.create(self.roomId);
                 }, function(err){
                     this.$.join.disabled = false;
-                    self.showData('[NOTICE]: ' + '无法获取摄像头信息');
+                    self.showData('[NOTICE]: ' + this.lang('notice_unable_access_camera'));
                 });
             },
             leave: function(){
@@ -299,6 +299,55 @@
                 this.$.chat.innerHTML = old +"<br/>" + text;
                 this.$.chat.scrollTop = this.$.chat.scrollHeight;
                 this.lastShow = data;
+            },
+            lang: function(key){
+                var i18n = {
+                    join: {
+                        'en-US': 'Join',
+                        'zh-CN': '加入'
+                    },
+                    leave: {
+                        'en-US': 'Leave',
+                        'zh-CN': '离开'
+                    },
+                    send_message: {
+                        'en-US': 'Type ... Press Enter',
+                        'zh-CN': '回车发送消息'
+                    },
+                    notice_your_name: {
+                        'en-US': 'Your name is',
+                        'zh-CN': '你的临时名字是'
+                    },
+                    notice_disconnect: {
+                        'en-US': 'Connection has been disconnected, try refresh page',
+                        'zh-CN': '连接已断开, 请检查网络连接, 并刷新重连'
+                    },
+                    notice_joined: {
+                        'en-US': 'joined',
+                        'zh-CN': '加入了'
+                    },
+                    notice_left: {
+                        'en-US': 'left',
+                        'zh-CN': '离开了'
+                    },
+                    notice_you_joined: {
+                        'en-US': 'You have joined room',
+                        'zh-CN': '你已加入房间'
+                    },
+                    notice_full: {
+                        'en-US': 'Room is full',
+                        'zh-CN': '房间人数已满'
+                    },
+                    notice_unable_access_camera: {
+                        'en-US': 'Unable to access the camera',
+                        'zh-CN': '无法获取摄像头信息'
+                    }
+                };
+                var _ = 'en-US';
+                if(navigator.language === 'zh-CN'){
+                    _ = 'zh-CN';
+                }
+                return i18n[key][_];
             }
         });
     </script>

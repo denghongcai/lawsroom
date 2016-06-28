@@ -59,11 +59,11 @@
                          .type('application/json')
                          .send({browser: bowser, userAgent: navigator.userAgent, logs: logs})
                          .end(function(err, res){
-                            var subject = encodeURIComponent('遇到BUG');
-                            var body = encodeURIComponent('请在链接下面描述你遇到的BUG('+res.text+'):');
+                            var subject = encodeURIComponent('Bug');
+                            var body = encodeURIComponent('Reproduce bug('+res.text+'):');
                             window.open('mailto:contact@lawsroom.com?subject='+subject+'&body='+body);
                          });
-            }());">发现BUG</paper-button>
+            }());">Bug</paper-button>
             </paper-toolbar>
             <iron-pages id="pages" attr-for-selected="id" selected="x-door">
                 <x-door id="x-door"></x-door>

@@ -33,23 +33,23 @@
             }
         </style>
         <div class="container">
-            <div><paper-input id="input" placeholder="输入房间名字按回车进入"></paper-input></div>
+            <div><paper-input id="input" placeholder="[[lang('enter_a_room')]]"></paper-input></div>
                 <div>OR</div>
-            <div><paper-button raised on-click="random">随机进入房间</paper-button></div>
+            <div><paper-button raised on-click="random">[[lang('random_room')]]</paper-button></div>
         </div>
         <div class="footer">
             <div>
-                <a href="https://blog.lawsroom.com" target="_blank">博客</a>
+                <a href="https://blog.lawsroom.com" target="_blank">[[lang('blog')]]</a>
                 -
-                <a href="https://trello.com/b/NEJvmnbI" target="_blank">产品路线</a>
+                <a href="https://trello.com/b/NEJvmnbI" target="_blank">[[lang('trello')]]</a>
                 -
-                <a href="https://docs.lawsroom.com" target="_blank">开发者</a>
+                <a href="https://docs.lawsroom.com" target="_blank">[[lang('developer')]]</a>
                 -
-                <a href="https://blog.lawsroom.com/about/" target="_blank">关于</a>
+                <a href="https://blog.lawsroom.com/about/" target="_blank">[[lang('about')]]</a>
                 -
-                <a href="mailto:contact@lawsroom.com" target="_blank">联系</a>
+                <a href="mailto:contact@lawsroom.com" target="_blank">[[lang('contact')]]</a>
             </div>
-            <div>&copy;2016 北京动合无形科技有限公司</div>
+            <div>&copy;2016 [[lang('copyright')]]</div>
         </div>
         <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"
                             on-keys-pressed="room"></iron-a11y-keys>
@@ -70,6 +70,47 @@
             },
             random: function(){
                 page('/random');
+            },
+            lang: function(key){
+                var i18n = {
+                    enter_a_room: {
+                        'en-US': 'Type a name, press Enter',
+                        'zh-CN': '输入房间名字按回车进入'
+                    },
+                    random_room: {
+                        'en-US': 'Random',
+                        'zh-CN': '随机进入房间'
+                    },
+                    blog: {
+                        'en-US': 'Blog',
+                        'zh-CN': '博客'
+                    },
+                    trello: {
+                        'en-US': 'Trello',
+                        'zh-CN': 'Trello'
+                    },
+                    developer: {
+                        'en-US': 'Developer',
+                        'zh-CN': '开发者'
+                    },
+                    about: {
+                        'en-US': 'About',
+                        'zh-CN': '关于'
+                    },
+                    contact: {
+                        'en-US': 'Contact',
+                        'zh-CN': '联系'
+                    },
+                    copyright: {
+                        'en-US': 'lawsroom.com',
+                        'zh-CN': '北京动合无形科技有限公司'
+                    }
+                };
+                var _ = 'en-US';
+                if(navigator.language === 'zh-CN'){
+                    _ = 'zh-CN';
+                }
+                return i18n[key][_];
             }
         });
     </script>

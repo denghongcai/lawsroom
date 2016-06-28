@@ -2,7 +2,7 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-var names = [
+var zh_cn_names = [
 '路飞',
 '索隆',
 '娜美',
@@ -223,12 +223,75 @@ var names = [
 '紫罗兰'
 ];
 
+var en_us_names = [
+'Luffy',
+'Zoro',
+'Nami',
+'Usopp',
+'Sanji',
+'Chopper',
+'Robin',
+'Franky',
+'Brook',
+'Kingdom',
+'Works',
+'Buggy',
+'CP9',
+'Dressrosa',
+'Pirates',
+'Emperors',
+'Army',
+'Kuja',
+'Tribe',
+'Navy',
+'Army',
+'Akainu',
+'Aokiji',
+'Arlong',
+'Kuma',
+'Blackbeard',
+'Hancock',
+'Clay',
+'Buggy',
+'Crocodile',
+'Django',
+'Mihawk',
+'Doflamingo',
+'Rosinante',
+'Eneru',
+'Mr.3',
+'Moriah',
+'Roger',
+'Hatchan',
+'Helmeppo',
+'Jimbei',
+'Koby',
+'Kizaru',
+'Garp',
+'Vivi',
+'Ace',
+'Sabo',
+'Sengoku',
+'Shanks',
+'Rayleigh',
+'Smoker',
+'Tashigi',
+'Law',
+'Vergo'
+];
+
 function id(){
-    return uuid.v4().replace(/-/g, "") + ':' + names[getRandomInt(0, names.length-1)];
+    var _;
+    if(navigator.language === 'zh-CN'){
+      _ = zh_cn_names[getRandomInt(0, zh_cn_names.length-1)];
+    }else{
+      _ = en_us_names[getRandomInt(0, en_us_names.length-1)];
+    }
+    return uuid.v4().replace(/-/g, "") + ':' + _;
 }
 function name(id){
     var name = id.split(':')[1];
-    if(!name || name.length > 5){
+    if(!name || name.length > 16){
         return "一坨屎";
     }
     return name;
