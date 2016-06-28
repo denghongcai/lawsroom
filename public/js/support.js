@@ -15,6 +15,6 @@ function support(){
 }
 if(!support()){
     document.body.style.backgroundImage = "none";
-    document.body.innerHTML = '<div style="text-align:center;">请使用Chrome/Firefox/Opera浏览器</div>';
+    document.body.innerHTML = '<div style="text-align:center;">Please love Chrome/Firefox/Opera</div>';
 };
 
