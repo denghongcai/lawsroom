@@ -170,11 +170,11 @@
                 this.showData("[NOTICE]: "+this.lang('notice_disconnect'));
             },
             peer_open: function(who){
-                this.showData("[NOTICE]: " + name(who) + " "+this.lang('joined'));
+                this.showData("[NOTICE]: " + name(who) + " "+this.lang('notice_joined'));
             },
             peer_close: function(who){
                 this.$.you.stop();
-                this.showData("[NOTICE]: " + name(who) + " "+this.lang('left'));
+                this.showData("[NOTICE]: " + name(who) + " "+this.lang('notice_left'));
             },
             channel_open: function(who){
                 this.$.input.disabled = false;
