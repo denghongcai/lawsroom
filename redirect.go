@@ -5,6 +5,9 @@ import(
     "os"
     "io/ioutil"
     "bytes"
+    "net/url"
+
+    "github.com/gorilla/mux"
 )
 
 func redirect(w http.ResponseWriter, r *http.Request){
@@ -19,7 +22,13 @@ func redirect(w http.ResponseWriter, r *http.Request){
         return
     }
     w.Header().Set("Content-Type", "text/html; charset=UTF-8")
-    js := "<script>page('" + r.URL.Path + "');</script>"
+    vars := mux.Vars(r)
+    js := ""
+    if v, ok := vars["roomID"]; ok {
+        js = "<script>page('/room/" + url.QueryEscape(v) + "');</script>"
+    }else{
+        js = "<script>page('" + r.URL.Path + "');</script>"
+    }
     html = bytes.Replace(html, []byte("<!-- redirect -->"), []byte(js), 1)
     w.Write(html)
 }

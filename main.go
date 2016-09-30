@@ -67,7 +67,7 @@ func run() error{
     r := mux.NewRouter()
     r.Host(domain).Methods("GET").Path("/signal/_/{id}").Handler(getSignalHandle(origins))
     r.Host(domain).Methods("GET").Path("/random").HandlerFunc(redirect)
-    r.Host(domain).Methods("GET").Path("/room/{id}").HandlerFunc(redirect)
+    r.Host(domain).Methods("GET").Path("/room/{roomID}").HandlerFunc(redirect)
     r.Host(apiDomain).Methods("GET").Path("/v1/room/prepare").HandlerFunc(api.RoomPrepare)
     r.Host(apiDomain).Methods("POST").Path("/v1/room/status").HandlerFunc(api.RoomStatus)
 
