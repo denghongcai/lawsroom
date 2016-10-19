@@ -1,0 +1,18 @@
+{
+    "name": "ROOM",
+    "version": "1.1.0",
+    "description": "Group video chat and random video chat",
+    "manifest_version": 2,
+    "author": "TxThinking", 
+    "icons": {
+        "128": "img/icon_128.png"
+    },
+    "app": {
+        "urls": [
+            "https://lawsroom.com/"
+        ],
+        "launch": {
+            "web_url": "https://lawsroom.com/"
+        }
+    }
+}
