@@ -28,8 +28,8 @@ func (d *Dog) AfterPeerQuit(p *signal.Peer) {
     })
 }
 
-func (d *Dog) BeforeMessage(in *signal.InMessage) error {
-    switch in.Message.For {
+func (d *Dog) BeforeMessage(p *signal.Peer, m *signal.Message) error {
+    switch m.For {
     case signal.FOR_JOIN:
         for id, room := range signal.Rooms {
             if room.IsFull() {
@@ -43,15 +43,15 @@ func (d *Dog) BeforeMessage(in *signal.InMessage) error {
                 break
             }
 
-            lastPair, ok = Pairs[in.Peer.ID]
+            lastPair, ok = Pairs[p.ID]
             if !ok {
-                MakePair(in.Peer.ID, you)
-                in.Message.Room = id
+                MakePair(p.ID, you)
+                m.Room = id
                 return nil
             }
             if you != lastPair {
-                MakePair(in.Peer.ID, you)
-                in.Message.Room = id
+                MakePair(p.ID, you)
+                m.Room = id
                 return nil
             }
         }

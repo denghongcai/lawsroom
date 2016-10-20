@@ -90,7 +90,7 @@ func run() error{
         CustomFrameOptionsValue: "SAMEORIGIN",
         ContentTypeNosniff: true,
         BrowserXssFilter: true,
-        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://lawsroom.com wss://lawsroom.com https://law.txthinking.com wss://law.txthinking.com https://file.txthinking.com https://fonts.googleapis.com https://fonts.gstatic.com https://www.google-analytics.com",
+        ContentSecurityPolicy: "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://lawsroom.com wss://lawsroom.com https://dev-law.txthinking.com wss://dev-law.txthinking.com https://file.txthinking.com https://fonts.googleapis.com https://fonts.gstatic.com https://www.google-analytics.com",
     }).HandlerFuncWithNext))
     n.UseHandler(r)
 
