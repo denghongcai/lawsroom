@@ -1,4 +1,4 @@
-# law
+# lawsroom
 
-随机视频聊天，项目代号law
 
+> This project is the source of https://lawsroom.com
