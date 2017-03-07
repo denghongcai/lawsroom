@@ -13,7 +13,7 @@
         <link rel="stylesheet" type="text/css" href="/node_modules/layout-grid/dist/css/layout-grid.min.css" />
         <script src="/node_modules/layout-grid/dist/js/layout-grid.min.js"></script>
         <script src="/dist/js/superagent.js"></script>
-        <script>window._debug=true;</script>
+        <script>window._debug=false;</script>
         <script src="/dist/js/log.js"></script>
         <script src="/dist/js/adapter.js"></script>
         <script src="/dist/js/room.js"></script>
@@ -51,21 +51,7 @@
             <paper-toolbar>
             <span class="title">
                 ROOM
-                <span style="font-size:60%;">Beta</span>
             </span>
-            <!--
-            <paper-button onclick="javascript:(function(){
-                  var request = require('superagent');
-                  request.post('https://file.txthinking.com')
-                         .type('application/json')
-                         .send({browser: bowser, userAgent: navigator.userAgent, logs: logs})
-                         .end(function(err, res){
-                            var subject = encodeURIComponent('Bug');
-                            var body = encodeURIComponent('Reproduce bug('+res.text+'):');
-                            window.open('mailto:contact@lawsroom.com?subject='+subject+'&body='+body);
-                         });
-            }());">Bug</paper-button>
-            -->
             </paper-toolbar>
             <iron-pages id="pages" attr-for-selected="id" selected="x-door">
                 <x-door id="x-door"></x-door>
